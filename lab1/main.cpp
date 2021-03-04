@@ -108,9 +108,78 @@ double parabolic(double x1, double x2, double x3, double prev_x, double eps) {
     }
 }
 
-// TODO: combined Brent method
-double brent() {
-
+/**
+ * Brent's method of finding min value
+ * @require a < c && function unimodal in [a, c]
+ * @param a left border
+ * @param c right border
+ * @param eps absolute accuracy
+ * @return Min value in given range with given accuracy
+ */
+double brent(double a, double c, double eps) {
+    double x, w, v, x_res, w_res, v_res, d, e;
+    x = v = w = (a + c) / 2;
+    x_res = w_res = v_res = func(x);
+    d = e = c - a;
+    while (true) {
+        double g = e, u = -1;
+        e = d;
+        if (x != v && x != w && w != v && x_res != v_res && x_res != w_res && v_res != w_res) {
+            if (w > v) {
+                double a0 = v_res, a1 = (x_res - v_res) / (x - v), a2 =
+                        ((w_res - v_res) / (w - v) - (x_res - v_res) / (x - v)) / (w - x);
+                u = (v + x - (a1 / a2)) / 2;
+            } else {
+                double a0 = w_res, a1 = (x_res - w_res) / (x - w), a2 =
+                        ((v_res - w_res) / (v - w) - (x_res - w_res) / (x - w)) / (v - x);
+                u = (w + x - (a1 / a2)) / 2;
+            }
+        }
+        if (u - a > eps && u < c - eps && std::abs(u - x) < g / 2) {
+            d = std::abs(u - x);
+        } else {
+            if (x < (c - a) / 2) {
+                u = x + (c - x) / GOLDEN_RATIO;
+                d = c - x;
+            } else {
+                u = x - (x - a) / GOLDEN_RATIO;
+                d = x - a;
+            }
+        }
+        if (std::abs(u - x) < eps) {
+            return u;
+//            u = x + ((u - x > 0) - (u - x < 0)) * eps;
+        }
+        double u_res = func(u);
+        if (u_res <= x_res) {
+            if (u >= x) {
+                a = x;
+            } else {
+                c = x;
+            }
+            v = w;
+            w = x;
+            x = u;
+            v_res = w_res;
+            w_res = x_res;
+            x_res = u_res;
+        } else {
+            if (u >= x) {
+                c = u;
+            } else {
+                a = u;
+            }
+            if (u_res <= w_res || w == x) {
+                v = w;
+                w = u;
+                v_res = w_res;
+                w_res = u_res;
+            } else if (u_res <= v_res || v == x || v == w) {
+                v = u;
+                v_res = u_res;
+            }
+        }
+    }
 }
 
 /**
