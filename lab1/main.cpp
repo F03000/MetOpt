@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include <vector>
 
 /// golden ratio for golden section method
 const double GOLDEN_RATIO = (1 + sqrt(5)) / 2;
@@ -67,10 +68,38 @@ double golden_section(double a, double b, double eps) {
     return (a + b) / 2;
 }
 
+/**
+ * Fibonacci method of finding min value
+ * @require a < b && function unimodal in [a, b]
+ * @param a0 left border
+ * @param b0 right border
+ * @param eps absolute accuracy
+ * @return Min value in given range with given accuracy
+ */
+double fibonacci(double a0, double b0, double eps) {
+    std::vector<double> f(2);
+    int n = 0;
+    f[n++] = 1;
+    f[n++] = 1;
+    for (; f.back() <= (b0 - a0) / eps; ++n) {
+        f.push_back(f.back() + f[n - 2]);
+    }
+    f.pop_back();
+    n--;
+    number_of_iterations = n - 2;
 
-// TODO: fibonacci method
-double fibonacci() {
+    double a = a0, b = b0;
+    for (int k = 0; k < number_of_iterations; k++) {
+        double x1 = a + (f[number_of_iterations - k] / f.back()) * (b0 - a0);
+        double x2 = a + (f[number_of_iterations - k + 1] / f.back()) * (b0 - a0);
+        if (func(x1) <= func(x2)) {
+            b = x2;
+        } else {
+            a = x1;
+        }
+    }
 
+    return (a + b) / 2;
 }
 
 /**
@@ -90,7 +119,7 @@ double parabolic(double x1, double x2, double x3, double prev_x, double eps) {
             ((x3_res - x1_res) / (x3 - x1) - (x2_res - x1_res) / (x2 - x1)) / (x3 - x2);
     double x = (x1 + x2 - (a1 / a2)) / 2;
     double x_res = func(x);
-    if (std::abs(x - prev_x) <= eps) {
+    if (fabs(x - prev_x) <= eps) {
         return x;
     }
     if (x < x2) {
@@ -135,8 +164,8 @@ double brent(double a, double c, double eps) {
                 u = (w + x - (a1 / a2)) / 2;
             }
         }
-        if (u - a > eps && u < c - eps && std::abs(u - x) < g / 2) {
-            d = std::abs(u - x);
+        if (u - a > eps && u < c - eps && fabs(u - x) < g / 2) {
+            d = fabs(u - x);
         } else {
             if (x < (c - a) / 2) {
                 u = x + (c - x) / GOLDEN_RATIO;
@@ -200,8 +229,8 @@ int main() {
     double eps = 10e-5;
     log("Dichotomy", eps, dichotomy(0, M_2_PI, eps));
     log("Golden section", eps, golden_section(0, M_2_PI, eps));
-//    log("Fibonacci", eps, );
-//    log("Parabolic", eps, );
-//    log("Combined Brent", eps, );
+    log("Fibonacci", eps, fibonacci(0, M_2_PI, eps));
+//    log("Parabolic", eps, parabolic());
+    log("Combined Brent", eps, brent(0, M_2_PI, eps));
     return 0;
 }
