@@ -69,10 +69,6 @@ double golden_section(double a, double b, double eps) {
     return (a + b) / 2;
 }
 
-double fib(int n) {
-    return (pow((1 + sqrt(5)) / 2, n) - pow((1 - sqrt(5)) / 2, n)) / sqrt(5);
-}
-
 /**
  * Fibonacci method of finding min value
  * @require a < b && function unimodal in [a, b]
@@ -114,30 +110,33 @@ double fibonacci(double a0, double b0, double eps) {
  * @param eps absolute accuracy
  * @return Min value in given range
  */
-double parabolic(double x1, double x2, double x3, double prev_x, double eps) {
-    std::cout << "a = " << x1 << ", b = " << x3 << std::endl;
-    number_of_iterations++;
-    double x1_res = func(x1), x2_res = func(x2), x3_res = func(x3);
-    double a0 = x1_res, a1 = (x2_res - x1_res) / (x2 - x1), a2 =
-            ((x3_res - x1_res) / (x3 - x1) - (x2_res - x1_res) / (x2 - x1)) / (x3 - x2);
-    double x = (x1 + x2 - (a1 / a2)) / 2;
-    double x_res = func(x);
-    if (fabs(x - prev_x) <= eps) {
-        return x;
-    }
-    if (x < x2) {
-        if (x_res >= x2_res) {
-            return parabolic(x, x2, x3, x, eps);
+double parabolic(double a, double b, double eps) {
+    double x1 = a, x2 = (a + b) / 2, x3 = b, x = a, prev_x;
+    do {
+        number_of_iterations++;
+        double f_x1 = func(x1), f_x2 = func(x2), f_x3 = func(x3);
+        double a0 = f_x1, a1 = (f_x2 - f_x1) / (x2 - x1), a2 =
+                ((f_x3 - f_x1) / (x3 - x1) - (f_x2 - f_x1) / (x2 - x1)) / (x3 - x2);
+        prev_x = x;
+        x = (x1 + x2 - (a1 / a2)) / 2;
+        double f_x = func(x);
+        if (x < x2) {
+            if (f_x >= f_x2) {
+                x1 = x;
+            } else {
+                x3 = x2;
+                x2 = x;
+            }
         } else {
-            return parabolic(x1, x, x2, x, eps);
+            if (f_x <= f_x2) {
+                x1 = x2;
+                x2 = x;
+            } else {
+                x3 = x;
+            }
         }
-    } else {
-        if (x_res >= x2_res) {
-            return parabolic(x1, x2, x, x, eps);
-        } else {
-            return parabolic(x2, x, x3, x, eps);
-        }
-    }
+    } while (fabs(x - prev_x) > eps);
+    return (x1 + x3) / 2;
 }
 
 /**
@@ -216,9 +215,9 @@ double brent(double a, double c, double eps) {
 
 /**
  * Console logger function
- * @param name: name of method
- * @param eps: accuracy
- * @param res: result
+ * @param name name of method
+ * @param eps accuracy
+ * @param res result
  */
 void log(const std::string& name, double eps, double res) {
     std::cout << std::setprecision(8);
@@ -232,10 +231,10 @@ void log(const std::string& name, double eps, double res) {
 
 int main() {
     double eps = 10e-8;
-    log("Dichotomy", eps, dichotomy(0, M_2_PI, eps));
-    log("Golden section", eps, golden_section(0, M_2_PI, eps));
-    log("Fibonacci", eps, fibonacci(0, M_2_PI, eps));
-//    log("Parabolic", eps, parabolic());
-//    log("Combined Brent", eps, brent(0, M_2_PI, eps));
+    log("Dichotomy", eps, dichotomy(0, 2 * M_PI, eps));
+    log("Golden section", eps, golden_section(0, 2 * M_PI, eps));
+    log("Fibonacci", eps, fibonacci(0, 2 * M_PI, eps));
+    log("Parabolic", eps, parabolic(0, 2 * M_PI, eps));
+    log("Combined Brent", eps, brent(0, 2 * M_PI, eps));
     return 0;
 }
