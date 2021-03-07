@@ -84,14 +84,12 @@ double fibonacci(double a0, double b0, double eps) {
     for (; f.back() <= (b0 - a0) / eps; ++n) {
         f.push_back(f.back() + f[n - 2]);
     }
-    f.pop_back();
-    n--;
     number_of_iterations = n - 2;
 
     double a = a0, b = b0;
     for (int k = 0; k < number_of_iterations; k++) {
-        double x1 = a + (f[number_of_iterations - k] / f.back()) * (b0 - a0);
-        double x2 = a + (f[number_of_iterations - k + 1] / f.back()) * (b0 - a0);
+        double x1 = a + (f[number_of_iterations - k - 1] * (b0 - a0)) / f.back();
+        double x2 = a + (f[number_of_iterations - k] * (b0 - a0)) / f.back();
         if (func(x1) <= func(x2)) {
             b = x2;
         } else {
