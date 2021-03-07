@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include <iomanip>
 
 /// golden ratio for golden section method
 const double GOLDEN_RATIO = (1 + sqrt(5)) / 2;
@@ -66,6 +67,10 @@ double golden_section(double a, double b, double eps) {
     }
 
     return (a + b) / 2;
+}
+
+double fib(int n) {
+    return (pow((1 + sqrt(5)) / 2, n) - pow((1 - sqrt(5)) / 2, n)) / sqrt(5);
 }
 
 /**
@@ -216,6 +221,8 @@ double brent(double a, double c, double eps) {
  * @param res: result
  */
 void log(const std::string& name, double eps, double res) {
+    std::cout << std::setprecision(8);
+    std::cout << std::fixed;
     std::cout << "Method used:          " << name << std::endl;
     std::cout << "Absolute error        " << eps << std::endl;
     std::cout << "Result:               " << res << std::endl;
@@ -224,11 +231,11 @@ void log(const std::string& name, double eps, double res) {
 }
 
 int main() {
-    double eps = 10e-5;
+    double eps = 10e-8;
     log("Dichotomy", eps, dichotomy(0, M_2_PI, eps));
     log("Golden section", eps, golden_section(0, M_2_PI, eps));
     log("Fibonacci", eps, fibonacci(0, M_2_PI, eps));
 //    log("Parabolic", eps, parabolic());
-    log("Combined Brent", eps, brent(0, M_2_PI, eps));
+//    log("Combined Brent", eps, brent(0, M_2_PI, eps));
     return 0;
 }
