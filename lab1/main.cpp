@@ -11,15 +11,6 @@ const double GOLDEN_RATIO = (1 + sqrt(5)) / 2;
 size_t number_of_iterations;
 
 /**
- * Function for research
- * @param x function argument
- * @return function value
- *//*
-double func(double x) {
-
-}*/
-
-/**
  * Dichotomy method of finding min value
  * @require a < b && function unimodal in [a, b]
  * @param a left border
@@ -230,7 +221,16 @@ void log(const std::string& name, double eps, double res) {
 }
 
 int main() {
+    /**
+     * absolute accuracy
+     */
     double eps = 10e-6;
+
+    /**
+    * Function for research
+    * @param x function argument
+    * @return function value
+    */
     auto func = [](double x) {
         return -3.0 * x * sin(0.75 * x) + exp(-2.0 * x);
     };
