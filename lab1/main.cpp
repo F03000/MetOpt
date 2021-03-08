@@ -29,7 +29,6 @@ double func(double x) {
 double dichotomy(double a, double b, double eps) {
     number_of_iterations = 0;
     double d = eps / 2;
-
     while (fabs(b - a) / 2 > eps) {
         number_of_iterations++;
         double x1 = (a + b) / 2 - d;
@@ -40,7 +39,6 @@ double dichotomy(double a, double b, double eps) {
             a = x1;
         }
     }
-
     return (a + b) / 2;
 }
 
@@ -54,7 +52,6 @@ double dichotomy(double a, double b, double eps) {
  */
 double golden_section(double a, double b, double eps) {
     number_of_iterations = 0;
-
     while (fabs(b - a) / 2 > eps) {
         number_of_iterations++;
         double x1 = b - (b - a) / GOLDEN_RATIO;
@@ -65,7 +62,6 @@ double golden_section(double a, double b, double eps) {
             a = x1;
         }
     }
-
     return (a + b) / 2;
 }
 
@@ -97,7 +93,6 @@ double fibonacci(double a0, double b0, double eps) {
             a = x1;
         }
     }
-
     return (a + b) / 2;
 }
 
@@ -182,9 +177,8 @@ double brent(double a, double c, double eps) {
                 d = x - a;
             }
         }
-        if (std::abs(u - x) < eps) {
+        if (fabs(u - x) < eps) {
             return u;
-//            u = x + ((u - x > 0) - (u - x < 0)) * eps;
         }
         double u_res = func(u);
         if (u_res <= x_res) {
