@@ -283,7 +283,7 @@ int main() {
     std::ofstream myfile;
     myfile << std::setprecision(6) << std::fixed;
     myfile.open("all.csv");
-    myfile << "name,result,n" << std::endl;
+    myfile << "name,result,number of iterations" << std::endl;
     myfile << "Dichotomy," << dichotomy(f, 0, 2 * M_PI, eps) << "," << number_of_iterations << std::endl;
     myfile << "Golden section," << golden_section(f, 0, 2 * M_PI, eps) << "," << number_of_iterations << std::endl;
     myfile << "Fibonacci," << fibonacci(f, 0, 2 * M_PI, eps) << "," << number_of_iterations << std::endl;
