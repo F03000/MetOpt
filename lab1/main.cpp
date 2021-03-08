@@ -4,6 +4,8 @@
 #include <iomanip>
 #include <functional>
 
+typedef const std::function<double(double)>& func;
+
 /// golden ratio for golden section method
 const double GOLDEN_RATIO = (1 + sqrt(5)) / 2;
 
@@ -12,20 +14,20 @@ size_t number_of_iterations;
 
 /**
  * Dichotomy method of finding min value
- * @require a < b && function unimodal in [a, b]
+ * @param f function for research
  * @param a left border
- * @param b right border
+ * @param bright border
  * @param eps absolute accuracy
  * @return Min value in given range with given accuracy
  */
-double dichotomy(const std::function<double(double)>& func, double a, double b, double eps) {
+double dichotomy(func f, double a, double b, double eps) {
     number_of_iterations = 0;
     double d = eps / 2;
     while (fabs(b - a) / 2 > eps) {
         number_of_iterations++;
         double x1 = (a + b) / 2 - d;
         double x2 = (a + b) / 2 + d;
-        if (func(x1) <= func(x2)) {
+        if (f(x1) <= f(x2)) {
             b = x2;
         } else {
             a = x1;
@@ -36,19 +38,19 @@ double dichotomy(const std::function<double(double)>& func, double a, double b, 
 
 /**
  * Golden section method of finding min value
- * @require a < b && function unimodal in [a, b]
+ * @param f function for research
  * @param a left border
- * @param b right border
+ * @param bright border
  * @param eps absolute accuracy
  * @return Min value in given range with given accuracy
  */
-double golden_section(const std::function<double(double)>& func, double a, double b, double eps) {
+double golden_section(func f, double a, double b, double eps) {
     number_of_iterations = 0;
     while (fabs(b - a) / 2 > eps) {
         number_of_iterations++;
         double x1 = b - (b - a) / GOLDEN_RATIO;
         double x2 = a + (b - a) / GOLDEN_RATIO;
-        if (func(x1) <= func(x2)) {
+        if (f(x1) <= f(x2)) {
             b = x2;
         } else {
             a = x1;
@@ -59,27 +61,27 @@ double golden_section(const std::function<double(double)>& func, double a, doubl
 
 /**
  * Fibonacci method of finding min value
- * @require a < b && function unimodal in [a, b]
- * @param a0 left border
- * @param b0 right border
+ * @param f function for research
+ * @param a left border
+ * @param bright border
  * @param eps absolute accuracy
  * @return Min value in given range with given accuracy
  */
-double fibonacci(const std::function<double(double)>& func, double a0, double b0, double eps) {
-    std::vector<double> f(2);
+double fibonacci(func f, double a0, double b0, double eps) {
+    std::vector<double> fib(2);
     int n = 0;
-    f[n++] = 1;
-    f[n++] = 1;
-    for (; f.back() <= (b0 - a0) / eps; ++n) {
-        f.push_back(f.back() + f[n - 2]);
+    fib[n++] = 1;
+    fib[n++] = 1;
+    for (; fib.back() <= (b0 - a0) / eps; ++n) {
+        fib.push_back(fib.back() + fib[n - 2]);
     }
     number_of_iterations = n - 2;
 
     double a = a0, b = b0;
     for (int k = 0; k < number_of_iterations; k++) {
-        double x1 = a + (f[number_of_iterations - k - 1] * (b0 - a0)) / f.back();
-        double x2 = a + (f[number_of_iterations - k] * (b0 - a0)) / f.back();
-        if (func(x1) <= func(x2)) {
+        double x1 = a + (fib[number_of_iterations - k - 1] * (b0 - a0)) / fib.back();
+        double x2 = a + (fib[number_of_iterations - k] * (b0 - a0)) / fib.back();
+        if (f(x1) <= f(x2)) {
             b = x2;
         } else {
             a = x1;
@@ -90,23 +92,22 @@ double fibonacci(const std::function<double(double)>& func, double a0, double b0
 
 /**
  * Parabolic method of finding min value
- * @param x1
- * @param x2
- * @param x3
- * @param prev_x
+ * @param f function for research
+ * @param a left border
+ * @param bright border
  * @param eps absolute accuracy
- * @return Min value in given range
+ * @return Min value in given range with given accuracy
  */
-double parabolic(const std::function<double(double)>& func, double a, double b, double eps) {
+double parabolic(func f, double a, double b, double eps) {
     double prev_x = a, x1 = a, x2 = (a + b) / 2, x3 = b;
     number_of_iterations = 0;
     while (true) {
         number_of_iterations++;
-        double f_x1 = func(x1), f_x2 = func(x2), f_x3 = func(x3);
+        double f_x1 = f(x1), f_x2 = f(x2), f_x3 = f(x3);
         double a0 = f_x1, a1 = (f_x2 - f_x1) / (x2 - x1), a2 =
                 ((f_x3 - f_x1) / (x3 - x1) - (f_x2 - f_x1) / (x2 - x1)) / (x3 - x2);
         double x = (x1 + x2 - (a1 / a2)) / 2;
-        double f_x = func(x);
+        double f_x = f(x);
         if (fabs(x - prev_x) <= eps) {
             return x;
         }
@@ -130,18 +131,18 @@ double parabolic(const std::function<double(double)>& func, double a, double b, 
 }
 
 /**
- * Brent's method of finding min value
- * @require a < c && function unimodal in [a, c]
+ * Combined Brent method of finding min value
+ * @param f function for research
  * @param a left border
- * @param c right border
+ * @param bright border
  * @param eps absolute accuracy
  * @return Min value in given range with given accuracy
  */
-double brent(const std::function<double(double)>& func, double a, double c, double eps) {
+double brent(func f, double a, double c, double eps) {
     number_of_iterations = 0;
     double x, w, v, x_res, w_res, v_res, d, e;
     x = v = w = (a + c) / 2;
-    x_res = w_res = v_res = func(x);
+    x_res = w_res = v_res = f(x);
     d = e = c - a;
     while (true) {
         number_of_iterations++;
@@ -172,7 +173,7 @@ double brent(const std::function<double(double)>& func, double a, double c, doub
         if (fabs(u - x) < eps) {
             return u;
         }
-        double u_res = func(u);
+        double u_res = f(u);
         if (u_res <= x_res) {
             if (u >= x) {
                 a = x;
@@ -231,14 +232,14 @@ int main() {
     * @param x function argument
     * @return function value
     */
-    auto func = [](double x) {
+    auto f = [](double x) {
         return -3.0 * x * sin(0.75 * x) + exp(-2.0 * x);
     };
 
-    log("Dichotomy", eps, dichotomy(func, 0, 2 * M_PI, eps));
-    log("Golden section", eps, golden_section(func, 0, 2 * M_PI, eps));
-    log("Fibonacci", eps, fibonacci(func, 0, 2 * M_PI, eps));
-    log("Parabolic", eps, parabolic(func, 0, 2 * M_PI, eps));
-    log("Combined Brent", eps, brent(func, 0, 2 * M_PI, eps));
+    log("Dichotomy", eps, dichotomy(f, 0, 2 * M_PI, eps));
+    log("Golden section", eps, golden_section(f, 0, 2 * M_PI, eps));
+    log("Fibonacci", eps, fibonacci(f, 0, 2 * M_PI, eps));
+    log("Parabolic", eps, parabolic(f, 0, 2 * M_PI, eps));
+    log("Combined Brent", eps, brent(f, 0, 2 * M_PI, eps));
     return 0;
 }
