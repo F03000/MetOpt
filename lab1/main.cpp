@@ -34,14 +34,13 @@ double dichotomy(func f, double a, double b, double eps) {
         double x1 = (a + b) / 2 - d;
         double x2 = (a + b) / 2 + d;
         myfile << number_of_iterations << "," << a << ","  << b << "," << x1 << "," << x2 << "," <<
-               f(x1) << "," << f(x2) << "," << b - a << ",";
+               f(x1) << "," << f(x2) << "," << b - a << "," << prev_b_a / (b - a) <<  std::endl;
         prev_b_a = b - a;
         if (f(x1) <= f(x2)) {
             b = x2;
         } else {
             a = x1;
         }
-        myfile <<  prev_b_a / (b - a) <<  std::endl;
     }
     myfile.close();
     return (a + b) / 2;
@@ -67,14 +66,13 @@ double golden_section(func f, double a, double b, double eps) {
         double x1 = b - (b - a) / GOLDEN_RATIO;
         double x2 = a + (b - a) / GOLDEN_RATIO;
         myfile << number_of_iterations << "," << a << ","  << b << "," << x1 << "," << x2 << "," <<
-               f(x1) << "," << f(x2) << "," << b - a << ",";
+               f(x1) << "," << f(x2) << "," << b - a << "," << prev_b_a / (b - a) <<  std::endl;
         prev_b_a = b - a;
         if (f(x1) <= f(x2)) {
             b = x2;
         } else {
             a = x1;
         }
-        myfile <<  prev_b_a / (b - a) <<  std::endl;
     }
     myfile.close();
     return (a + b) / 2;
@@ -108,14 +106,13 @@ double fibonacci(func f, double a0, double b0, double eps) {
         double x1 = a + (fib[number_of_iterations - k - 1] * (b0 - a0)) / fib.back();
         double x2 = a + (fib[number_of_iterations - k] * (b0 - a0)) / fib.back();
         myfile << k + 1 << "," << a << ","  << b << "," << x1 << "," << x2 << "," <<
-               f(x1) << "," << f(x2) << "," << b - a << ",";
+               f(x1) << "," << f(x2) << "," << b - a << "," << prev_b_a / (b - a) <<  std::endl;
         prev_b_a = b - a;
         if (f(x1) <= f(x2)) {
             b = x2;
         } else {
             a = x1;
         }
-        myfile << prev_b_a / (b - a) << std::endl;
     }
     myfile.close();
     return (a + b) / 2;
@@ -145,9 +142,10 @@ double parabolic(func f, double a, double b, double eps) {
         double x = (x1 + x2 - (a1 / a2)) / 2;
         double f_x = f(x);
         myfile << number_of_iterations << "," << x1 << "," << x2 << "," << x3 << "," << f_x1 << "," <<
-               x2 << "," << x3 << "," << x << "," << f_x << "," << x3 - x1 << "," << prev_b_a / (x3 - x1) << std::endl;
+               x2 << "," << x3 << "," << x << "," << f_x << "," << x3 - x1 << "," << prev_b_a / (x3 - x1) <<  std::endl;
         prev_b_a = x3 - x1;
         if (fabs(x - prev_x) <= eps) {
+            myfile << "1" << std::endl;
             myfile.close();
             return x;
         }
@@ -189,8 +187,8 @@ double brent(func f, double a, double c, double eps) {
     myfile.open("brent.csv");
     myfile << std::setprecision(6) << std::fixed;
     myfile << "n,a,b,x,f(x),w,f(w),u,f(u),b-a,k,method" << std::endl;
-    myfile << "0," << a << "," << c << "," << NAN << "," << NAN << "," << NAN << "," << c - a << "," << 1 << "," << NAN << std::endl;
     std::string method;
+    double prev_c_a = c - a;
     number_of_iterations = 0;
     double x, w, v, x_res, w_res, v_res, d, e;
     x = v = w = (a + c) / 2;
@@ -198,7 +196,6 @@ double brent(func f, double a, double c, double eps) {
     d = e = c - a;
     while (true) {
         number_of_iterations++;
-        double prev_c_a = c - a;
         double g = e, u = -1;
         e = d;
         if (x != v && x != w && w != v && x_res != v_res && x_res != w_res && v_res != w_res) {
@@ -227,6 +224,7 @@ double brent(func f, double a, double c, double eps) {
         }
         myfile << number_of_iterations << "," << a << ","  << c << "," << x << "," << x_res << "," << w << ","
                << w_res << "," << u << "," << f(u) << "," << c - a << "," << prev_c_a / (c - a) << "," << method << std::endl;
+        prev_c_a = c - a;
         if (fabs(u - x) < eps) {
             myfile.close();
             return u;
