@@ -3,6 +3,7 @@
 #include <vector>
 #include <iomanip>
 #include <functional>
+#include <fstream>
 
 typedef const std::function<double(double)>& func;
 
@@ -21,18 +22,27 @@ size_t number_of_iterations;
  * @return Min value in given range with given accuracy
  */
 double dichotomy(func f, double a, double b, double eps) {
+    std::ofstream myfile;
+    myfile.open("dichotomy.csv");
+    myfile << std::setprecision(6) << std::fixed;
+    myfile << "n,a,b,x1,x2,f(x1),f(x2),b-a,k" << std::endl;
     number_of_iterations = 0;
     double d = eps / 2;
     while (fabs(b - a) / 2 > eps) {
+        double prev_b_a = b - a;
         number_of_iterations++;
         double x1 = (a + b) / 2 - d;
         double x2 = (a + b) / 2 + d;
+
         if (f(x1) <= f(x2)) {
             b = x2;
         } else {
             a = x1;
         }
+        myfile << number_of_iterations << "," << a << ","  << b << "," << x1 << "," <<
+               x2 << "," << f(x1) << "," << f(x2) << "," << b - a << "," << prev_b_a / (b - a) <<  std::endl;
     }
+    myfile.close();
     return (a + b) / 2;
 }
 
@@ -45,8 +55,13 @@ double dichotomy(func f, double a, double b, double eps) {
  * @return Min value in given range with given accuracy
  */
 double golden_section(func f, double a, double b, double eps) {
+    std::ofstream myfile;
+    myfile.open("golden_section.csv");
+    myfile << std::setprecision(6) << std::fixed;
+    myfile << "n,a,b,x1,x2,f(x1),f(x2),b-a,k" << std::endl;
     number_of_iterations = 0;
     while (fabs(b - a) / 2 > eps) {
+        double prev_b_a = b - a;
         number_of_iterations++;
         double x1 = b - (b - a) / GOLDEN_RATIO;
         double x2 = a + (b - a) / GOLDEN_RATIO;
@@ -55,7 +70,10 @@ double golden_section(func f, double a, double b, double eps) {
         } else {
             a = x1;
         }
+        myfile << number_of_iterations << "," << a << ","  << b << "," << x1 << "," <<
+               x2 << "," << f(x1) << "," << f(x2) << "," << b - a << "," << prev_b_a / (b - a) <<  std::endl;
     }
+    myfile.close();
     return (a + b) / 2;
 }
 
@@ -68,6 +86,10 @@ double golden_section(func f, double a, double b, double eps) {
  * @return Min value in given range with given accuracy
  */
 double fibonacci(func f, double a0, double b0, double eps) {
+    std::ofstream myfile;
+    myfile.open("fibonacci.csv");
+    myfile << std::setprecision(6) << std::fixed;
+    myfile << "n,a,b,x1,x2,f(x1),f(x2),b-a,k" << std::endl;
     std::vector<double> fib(2);
     int n = 0;
     fib[n++] = 1;
@@ -79,6 +101,7 @@ double fibonacci(func f, double a0, double b0, double eps) {
 
     double a = a0, b = b0;
     for (int k = 0; k < number_of_iterations; k++) {
+        double prev_b_a = b - a;
         double x1 = a + (fib[number_of_iterations - k - 1] * (b0 - a0)) / fib.back();
         double x2 = a + (fib[number_of_iterations - k] * (b0 - a0)) / fib.back();
         if (f(x1) <= f(x2)) {
@@ -86,7 +109,10 @@ double fibonacci(func f, double a0, double b0, double eps) {
         } else {
             a = x1;
         }
+        myfile << k + 1 << "," << a << ","  << b << "," << x1 << "," <<
+               x2 << "," << f(x1) << "," << f(x2) << "," << b - a << "," << prev_b_a / (b - a)  <<  std::endl;
     }
+    myfile.close();
     return (a + b) / 2;
 }
 
@@ -99,9 +125,14 @@ double fibonacci(func f, double a0, double b0, double eps) {
  * @return Min value in given range with given accuracy
  */
 double parabolic(func f, double a, double b, double eps) {
+    std::ofstream myfile;
+    myfile.open("parabolic.csv");
+    myfile << std::setprecision(6) << std::fixed;
+    myfile << "n,a,b,x2,x,f(a),f(b),f(x2),f(x),b-a,k" << std::endl;
     double prev_x = a, x1 = a, x2 = (a + b) / 2, x3 = b;
     number_of_iterations = 0;
     while (true) {
+        double prev_b_a = x3 - x1;
         number_of_iterations++;
         double f_x1 = f(x1), f_x2 = f(x2), f_x3 = f(x3);
         double a0 = f_x1, a1 = (f_x2 - f_x1) / (x2 - x1), a2 =
@@ -109,6 +140,7 @@ double parabolic(func f, double a, double b, double eps) {
         double x = (x1 + x2 - (a1 / a2)) / 2;
         double f_x = f(x);
         if (fabs(x - prev_x) <= eps) {
+            myfile.close();
             return x;
         }
         if (x < x2) {
@@ -126,6 +158,8 @@ double parabolic(func f, double a, double b, double eps) {
                 x2 = x;
             }
         }
+        myfile << number_of_iterations << "," << x1 << ","  << x3 << "," << x2 << "," <<
+               x << "," << f(x1) << "," << f(x3) << "," << f(x2) <<"," << f(x) << "," << x3 - x1 << "," << prev_b_a / (x3 - x1) <<  std::endl;
         prev_x = x;
     }
 }
@@ -139,6 +173,10 @@ double parabolic(func f, double a, double b, double eps) {
  * @return Min value in given range with given accuracy
  */
 double brent(func f, double a, double c, double eps) {
+    std::ofstream myfile;
+    myfile.open("brent.csv");
+    myfile << std::setprecision(6) << std::fixed;
+    myfile << ",b-a,k" << std::endl;
     number_of_iterations = 0;
     double x, w, v, x_res, w_res, v_res, d, e;
     x = v = w = (a + c) / 2;
@@ -171,8 +209,11 @@ double brent(func f, double a, double c, double eps) {
             }
         }
         if (fabs(u - x) < eps) {
+            myfile.close();
             return u;
         }
+//        myfile << number_of_iterations << "," << x1 << ","  << x3 << "," << x2 << "," <<
+//               x << "," << f(x1) << "," << f(x3) << "," << f(x2) <<"," << f(x) <<  std::endl;
         double u_res = f(u);
         if (u_res <= x_res) {
             if (u >= x) {
@@ -205,22 +246,6 @@ double brent(func f, double a, double c, double eps) {
     }
 }
 
-/**
- * Console logger function
- * @param name name of method
- * @param eps accuracy
- * @param res result
- */
-void log(const std::string& name, double eps, double res) {
-    std::cout << std::setprecision(6);
-    std::cout << std::fixed;
-    std::cout << "Method used:          " << name << std::endl;
-    std::cout << "Absolute error        " << eps << std::endl;
-    std::cout << "Result:               " << res << std::endl;
-    std::cout << "Number of iterations: " << number_of_iterations << std::endl;
-    std::cout << std::endl;
-}
-
 int main() {
     /**
      * absolute accuracy
@@ -236,10 +261,18 @@ int main() {
         return -3.0 * x * sin(0.75 * x) + exp(-2.0 * x);
     };
 
-    log("Dichotomy", eps, dichotomy(f, 0, 2 * M_PI, eps));
-    log("Golden section", eps, golden_section(f, 0, 2 * M_PI, eps));
-    log("Fibonacci", eps, fibonacci(f, 0, 2 * M_PI, eps));
-    log("Parabolic", eps, parabolic(f, 0, 2 * M_PI, eps));
-    log("Combined Brent", eps, brent(f, 0, 2 * M_PI, eps));
+    std::ofstream myfile;
+    myfile << std::setprecision(6) << std::fixed;
+    myfile.open("all.csv");
+    myfile << "name,result,n" << std::endl;
+    myfile << "Dichotomy," << dichotomy(f, 0, 2 * M_PI, eps) << "," << number_of_iterations << std::endl;
+    myfile << "Golden section," << golden_section(f, 0, 2 * M_PI, eps) << "," << number_of_iterations << std::endl;
+    myfile << "Fibonacci," << fibonacci(f, 0, 2 * M_PI, eps) << "," << number_of_iterations << std::endl;
+    myfile << "Parabolic," << parabolic(f, 0, 2 * M_PI, eps) << "," << number_of_iterations << std::endl;
+    myfile << "Combined Brent," << brent(f, 0, 2 * M_PI, eps) << "," << number_of_iterations << std::endl;
+    myfile.close();
+
+
+
     return 0;
 }
