@@ -2,6 +2,7 @@
 #include <cmath>
 #include <vector>
 #include <iomanip>
+#include <functional>
 
 /// golden ratio for golden section method
 const double GOLDEN_RATIO = (1 + sqrt(5)) / 2;
@@ -13,10 +14,10 @@ size_t number_of_iterations;
  * Function for research
  * @param x function argument
  * @return function value
- */
+ *//*
 double func(double x) {
-    return -3.0 * x * sin(0.75 * x) + exp(-2.0 * x);
-}
+
+}*/
 
 /**
  * Dichotomy method of finding min value
@@ -26,7 +27,7 @@ double func(double x) {
  * @param eps absolute accuracy
  * @return Min value in given range with given accuracy
  */
-double dichotomy(double a, double b, double eps) {
+double dichotomy(const std::function<double(double)>& func, double a, double b, double eps) {
     number_of_iterations = 0;
     double d = eps / 2;
     while (fabs(b - a) / 2 > eps) {
@@ -50,7 +51,7 @@ double dichotomy(double a, double b, double eps) {
  * @param eps absolute accuracy
  * @return Min value in given range with given accuracy
  */
-double golden_section(double a, double b, double eps) {
+double golden_section(const std::function<double(double)>& func, double a, double b, double eps) {
     number_of_iterations = 0;
     while (fabs(b - a) / 2 > eps) {
         number_of_iterations++;
@@ -73,7 +74,7 @@ double golden_section(double a, double b, double eps) {
  * @param eps absolute accuracy
  * @return Min value in given range with given accuracy
  */
-double fibonacci(double a0, double b0, double eps) {
+double fibonacci(const std::function<double(double)>& func, double a0, double b0, double eps) {
     std::vector<double> f(2);
     int n = 0;
     f[n++] = 1;
@@ -105,7 +106,7 @@ double fibonacci(double a0, double b0, double eps) {
  * @param eps absolute accuracy
  * @return Min value in given range
  */
-double parabolic(double a, double b, double eps) {
+double parabolic(const std::function<double(double)>& func, double a, double b, double eps) {
     double prev_x = a, x1 = a, x2 = (a + b) / 2, x3 = b;
     number_of_iterations = 0;
     while (true) {
@@ -145,7 +146,7 @@ double parabolic(double a, double b, double eps) {
  * @param eps absolute accuracy
  * @return Min value in given range with given accuracy
  */
-double brent(double a, double c, double eps) {
+double brent(const std::function<double(double)>& func, double a, double c, double eps) {
     number_of_iterations = 0;
     double x, w, v, x_res, w_res, v_res, d, e;
     x = v = w = (a + c) / 2;
@@ -230,10 +231,14 @@ void log(const std::string& name, double eps, double res) {
 
 int main() {
     double eps = 10e-6;
-    log("Dichotomy", eps, dichotomy(0, 2 * M_PI, eps));
-    log("Golden section", eps, golden_section(0, 2 * M_PI, eps));
-    log("Fibonacci", eps, fibonacci(0, 2 * M_PI, eps));
-    log("Parabolic", eps, parabolic(0, 2 * M_PI, eps));
-    log("Combined Brent", eps, brent(0, 2 * M_PI, eps));
+    auto func = [](double x) {
+        return -3.0 * x * sin(0.75 * x) + exp(-2.0 * x);
+    };
+
+    log("Dichotomy", eps, dichotomy(func, 0, 2 * M_PI, eps));
+    log("Golden section", eps, golden_section(func, 0, 2 * M_PI, eps));
+    log("Fibonacci", eps, fibonacci(func, 0, 2 * M_PI, eps));
+    log("Parabolic", eps, parabolic(func, 0, 2 * M_PI, eps));
+    log("Combined Brent", eps, brent(func, 0, 2 * M_PI, eps));
     return 0;
 }
