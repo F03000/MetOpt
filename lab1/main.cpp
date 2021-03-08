@@ -26,6 +26,7 @@ double dichotomy(func f, double a, double b, double eps) {
     myfile.open("dichotomy.csv");
     myfile << std::setprecision(6) << std::fixed;
     myfile << "n,a,b,x1,x2,f(x1),f(x2),b-a,k" << std::endl;
+    myfile << "0," << a << "," << b << "," << NAN  << "," << NAN  << "," << NAN  << "," << NAN  << "," << b - a << "," << 1 << std::endl;
     number_of_iterations = 0;
     double d = eps / 2;
     while (fabs(b - a) / 2 > eps) {
@@ -39,8 +40,8 @@ double dichotomy(func f, double a, double b, double eps) {
         } else {
             a = x1;
         }
-        myfile << number_of_iterations << "," << a << ","  << b << "," << x1 << "," <<
-               x2 << "," << f(x1) << "," << f(x2) << "," << b - a << "," << prev_b_a / (b - a) <<  std::endl;
+        myfile << number_of_iterations << "," << a << ","  << b << "," << x1 << "," << x2 << "," <<
+               f(x1) << "," << f(x2) << "," << b - a << "," << prev_b_a / (b - a) <<  std::endl;
     }
     myfile.close();
     return (a + b) / 2;
@@ -59,6 +60,7 @@ double golden_section(func f, double a, double b, double eps) {
     myfile.open("golden_section.csv");
     myfile << std::setprecision(6) << std::fixed;
     myfile << "n,a,b,x1,x2,f(x1),f(x2),b-a,k" << std::endl;
+    myfile << "0," << a << "," << b << "," << NAN  << "," << NAN  << "," << NAN  << "," << NAN  << "," << b - a << "," << 1 << std::endl;
     number_of_iterations = 0;
     while (fabs(b - a) / 2 > eps) {
         double prev_b_a = b - a;
@@ -70,8 +72,8 @@ double golden_section(func f, double a, double b, double eps) {
         } else {
             a = x1;
         }
-        myfile << number_of_iterations << "," << a << ","  << b << "," << x1 << "," <<
-               x2 << "," << f(x1) << "," << f(x2) << "," << b - a << "," << prev_b_a / (b - a) <<  std::endl;
+        myfile << number_of_iterations << "," << a << ","  << b << "," << x1 << "," << x2 << "," <<
+               f(x1) << "," << f(x2) << "," << b - a << "," << prev_b_a / (b - a) <<  std::endl;
     }
     myfile.close();
     return (a + b) / 2;
@@ -90,6 +92,7 @@ double fibonacci(func f, double a0, double b0, double eps) {
     myfile.open("fibonacci.csv");
     myfile << std::setprecision(6) << std::fixed;
     myfile << "n,a,b,x1,x2,f(x1),f(x2),b-a,k" << std::endl;
+    myfile << "0," << a0 << "," << b0 << "," << NAN  << "," << NAN  << "," << NAN  << "," << NAN  << "," << b0 - a0 << "," << 1 << std::endl;
     std::vector<double> fib(2);
     int n = 0;
     fib[n++] = 1;
@@ -109,8 +112,8 @@ double fibonacci(func f, double a0, double b0, double eps) {
         } else {
             a = x1;
         }
-        myfile << k + 1 << "," << a << ","  << b << "," << x1 << "," <<
-               x2 << "," << f(x1) << "," << f(x2) << "," << b - a << "," << prev_b_a / (b - a)  <<  std::endl;
+        myfile << k + 1 << "," << a << ","  << b << "," << x1 << "," << x2 << "," <<
+               f(x1) << "," << f(x2) << "," << b - a << "," << prev_b_a / (b - a) <<  std::endl;
     }
     myfile.close();
     return (a + b) / 2;
@@ -128,13 +131,15 @@ double parabolic(func f, double a, double b, double eps) {
     std::ofstream myfile;
     myfile.open("parabolic.csv");
     myfile << std::setprecision(6) << std::fixed;
-    myfile << "n,a,b,x2,x,f(a),f(b),f(x2),f(x),b-a,k" << std::endl;
+    myfile << "n,x1,x2,x3,f(x1),f(x2),f(x3),x,f(x),b-a,k" << std::endl;
     double prev_x = a, x1 = a, x2 = (a + b) / 2, x3 = b;
+    double f_x1 = f(x1), f_x2 = f(x2), f_x3 = f(x3);
     number_of_iterations = 0;
+    myfile << number_of_iterations << "," << x1 << "," << x2 << "," << x3 << "," << f_x1 << "," <<
+           f_x2 << "," << f_x3 << "," << NAN << "," << NAN << "," << x3 - x1 << ",1" <<  std::endl;
     while (true) {
         double prev_b_a = x3 - x1;
         number_of_iterations++;
-        double f_x1 = f(x1), f_x2 = f(x2), f_x3 = f(x3);
         double a0 = f_x1, a1 = (f_x2 - f_x1) / (x2 - x1), a2 =
                 ((f_x3 - f_x1) / (x3 - x1) - (f_x2 - f_x1) / (x2 - x1)) / (x3 - x2);
         double x = (x1 + x2 - (a1 / a2)) / 2;
@@ -146,20 +151,26 @@ double parabolic(func f, double a, double b, double eps) {
         if (x < x2) {
             if (f_x >= f_x2) {
                 x1 = x;
+                f_x1 = f_x;
             } else {
                 x3 = x2;
+                f_x3 = f_x2;
                 x2 = x;
+                f_x2 = f_x;
             }
         } else {
             if (f_x >= f_x2) {
                 x3 = x;
+                f_x3 = f_x;
             } else {
                 x1 = x2;
+                f_x1 = f_x2;
                 x2 = x;
+                f_x2 = f_x;
             }
         }
-        myfile << number_of_iterations << "," << x1 << ","  << x3 << "," << x2 << "," <<
-               x << "," << f(x1) << "," << f(x3) << "," << f(x2) <<"," << f(x) << "," << x3 - x1 << "," << prev_b_a / (x3 - x1) <<  std::endl;
+        myfile << number_of_iterations << "," << x1 << "," << x2 << "," << x3 << "," << f_x1 << "," <<
+               x2 << "," << x3 << "," << x << "," << f_x << "," << x3 - x1 << "," << prev_b_a / (x3 - x1) <<  std::endl;
         prev_x = x;
     }
 }
@@ -176,7 +187,8 @@ double brent(func f, double a, double c, double eps) {
     std::ofstream myfile;
     myfile.open("brent.csv");
     myfile << std::setprecision(6) << std::fixed;
-    myfile << ",b-a,k" << std::endl;
+    myfile << "n,a,b,x,f(x),w,f(w),u,f(u),b-a,k" << std::endl;
+    myfile << "0," << a << "," << c << "," << NAN << "," << NAN << "," << NAN << "," << c - a << "," << 1 << std::endl;
     number_of_iterations = 0;
     double x, w, v, x_res, w_res, v_res, d, e;
     x = v = w = (a + c) / 2;
@@ -184,6 +196,7 @@ double brent(func f, double a, double c, double eps) {
     d = e = c - a;
     while (true) {
         number_of_iterations++;
+        double prev_c_a = c - a;
         double g = e, u = -1;
         e = d;
         if (x != v && x != w && w != v && x_res != v_res && x_res != w_res && v_res != w_res) {
@@ -212,8 +225,6 @@ double brent(func f, double a, double c, double eps) {
             myfile.close();
             return u;
         }
-//        myfile << number_of_iterations << "," << x1 << ","  << x3 << "," << x2 << "," <<
-//               x << "," << f(x1) << "," << f(x3) << "," << f(x2) <<"," << f(x) <<  std::endl;
         double u_res = f(u);
         if (u_res <= x_res) {
             if (u >= x) {
@@ -243,6 +254,8 @@ double brent(func f, double a, double c, double eps) {
                 v_res = u_res;
             }
         }
+        myfile << number_of_iterations << "," << a << ","  << c << "," << x << "," << x_res << "," << w << ","
+        << w_res << "," << u << "," << u_res << "," << c - a << "," << prev_c_a / (c - a) << std::endl;
     }
 }
 
@@ -271,8 +284,6 @@ int main() {
     myfile << "Parabolic," << parabolic(f, 0, 2 * M_PI, eps) << "," << number_of_iterations << std::endl;
     myfile << "Combined Brent," << brent(f, 0, 2 * M_PI, eps) << "," << number_of_iterations << std::endl;
     myfile.close();
-
-
 
     return 0;
 }
