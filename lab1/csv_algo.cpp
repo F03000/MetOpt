@@ -15,9 +15,10 @@ size_t number_of_iterations;
 
 /**
  * Dichotomy method of finding min value
+ * @require a < b && function unimodal in [a, b]
  * @param f function for research
  * @param a left border
- * @param bright border
+ * @param b right border
  * @param eps absolute accuracy
  * @return Min value in given range with given accuracy
  */
@@ -48,9 +49,10 @@ double dichotomy(func f, double a, double b, double eps) {
 
 /**
  * Golden section method of finding min value
+ * @require a < b && function unimodal in [a, b]
  * @param f function for research
  * @param a left border
- * @param bright border
+ * @param b right border
  * @param eps absolute accuracy
  * @return Min value in given range with given accuracy
  */
@@ -80,9 +82,10 @@ double golden_section(func f, double a, double b, double eps) {
 
 /**
  * Fibonacci method of finding min value
+ * @require a < b && function unimodal in [a, b]
  * @param f function for research
  * @param a left border
- * @param bright border
+ * @param b right border
  * @param eps absolute accuracy
  * @return Min value in given range with given accuracy
  */
@@ -120,9 +123,10 @@ double fibonacci(func f, double a0, double b0, double eps) {
 
 /**
  * Parabolic method of finding min value
+ * @require a < b && function unimodal in [a, b]
  * @param f function for research
  * @param a left border
- * @param bright border
+ * @param b right border
  * @param eps absolute accuracy
  * @return Min value in given range with given accuracy
  */
@@ -145,7 +149,6 @@ double parabolic(func f, double a, double b, double eps) {
                x2 << "," << x3 << "," << x << "," << f_x << "," << x3 - x1 << "," << prev_b_a / (x3 - x1) <<  std::endl;
         prev_b_a = x3 - x1;
         if (fabs(x - prev_x) <= eps) {
-            myfile << "1" << std::endl;
             myfile.close();
             return x;
         }
@@ -176,9 +179,10 @@ double parabolic(func f, double a, double b, double eps) {
 
 /**
  * Combined Brent method of finding min value
+ * @require a < b && function unimodal in [a, b]
  * @param f function for research
  * @param a left border
- * @param bright border
+ * @param b right border
  * @param eps absolute accuracy
  * @return Min value in given range with given accuracy
  */
@@ -186,7 +190,7 @@ double brent(func f, double a, double c, double eps) {
     std::ofstream myfile;
     myfile.open("brent.csv");
     myfile << std::setprecision(6) << std::fixed;
-    myfile << "n,a,b,x,f(x),w,f(w),u,f(u),b-a,k,method" << std::endl;
+    myfile << "n,a,c,x,f(x),w,f(w),u,f(u),b-a,k,method" << std::endl;
     std::string method;
     double prev_c_a = c - a;
     number_of_iterations = 0;
