@@ -111,15 +111,18 @@ double fibonacci(double a0, double b0, double eps) {
  * @return Min value in given range
  */
 double parabolic(double a, double b, double eps) {
-    double x1 = a, x2 = (a + b) / 2, x3 = b, x = a, prev_x;
-    do {
+    double prev_x = a, x1 = a, x2 = (a + b) / 2, x3 = b;
+    number_of_iterations = 0;
+    while (true) {
         number_of_iterations++;
         double f_x1 = func(x1), f_x2 = func(x2), f_x3 = func(x3);
         double a0 = f_x1, a1 = (f_x2 - f_x1) / (x2 - x1), a2 =
                 ((f_x3 - f_x1) / (x3 - x1) - (f_x2 - f_x1) / (x2 - x1)) / (x3 - x2);
-        prev_x = x;
-        x = (x1 + x2 - (a1 / a2)) / 2;
+        double x = (x1 + x2 - (a1 / a2)) / 2;
         double f_x = func(x);
+        if (fabs(x - prev_x) <= eps) {
+            return x;
+        }
         if (x < x2) {
             if (f_x >= f_x2) {
                 x1 = x;
@@ -128,15 +131,15 @@ double parabolic(double a, double b, double eps) {
                 x2 = x;
             }
         } else {
-            if (f_x <= f_x2) {
+            if (f_x >= f_x2) {
+                x3 = x;
+            } else {
                 x1 = x2;
                 x2 = x;
-            } else {
-                x3 = x;
             }
         }
-    } while (fabs(x - prev_x) > eps);
-    return (x1 + x3) / 2;
+        prev_x = x;
+    }
 }
 
 /**
@@ -148,11 +151,13 @@ double parabolic(double a, double b, double eps) {
  * @return Min value in given range with given accuracy
  */
 double brent(double a, double c, double eps) {
+    number_of_iterations = 0;
     double x, w, v, x_res, w_res, v_res, d, e;
     x = v = w = (a + c) / 2;
     x_res = w_res = v_res = func(x);
     d = e = c - a;
     while (true) {
+        number_of_iterations++;
         double g = e, u = -1;
         e = d;
         if (x != v && x != w && w != v && x_res != v_res && x_res != w_res && v_res != w_res) {
@@ -220,7 +225,7 @@ double brent(double a, double c, double eps) {
  * @param res result
  */
 void log(const std::string& name, double eps, double res) {
-    std::cout << std::setprecision(8);
+    std::cout << std::setprecision(6);
     std::cout << std::fixed;
     std::cout << "Method used:          " << name << std::endl;
     std::cout << "Absolute error        " << eps << std::endl;
@@ -230,7 +235,7 @@ void log(const std::string& name, double eps, double res) {
 }
 
 int main() {
-    double eps = 10e-8;
+    double eps = 10e-6;
     log("Dichotomy", eps, dichotomy(0, 2 * M_PI, eps));
     log("Golden section", eps, golden_section(0, 2 * M_PI, eps));
     log("Fibonacci", eps, fibonacci(0, 2 * M_PI, eps));
