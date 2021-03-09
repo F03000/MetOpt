@@ -108,8 +108,14 @@ double parabolic(func f, double a, double b, double eps) {
     number_of_iterations = 0;
     while (true) {
         number_of_iterations++;
+        if (x3 == x1 || x2 == x1 || x3 == x2) {
+            return x2;
+        }
         double a0 = f_x1, a1 = (f_x2 - f_x1) / (x2 - x1), a2 =
                 ((f_x3 - f_x1) / (x3 - x1) - (f_x2 - f_x1) / (x2 - x1)) / (x3 - x2);
+        if (a1 == a2) {
+            return x2;
+        }
         double x = (x1 + x2 - (a1 / a2)) / 2;
         double f_x = f(x);
         if (fabs(x - prev_x) <= eps) {
