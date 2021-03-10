@@ -148,8 +148,6 @@ namespace algo {
      * @param eps absolute accuracy
      */
     void create_csv(func f, double a, double c, double eps);
-
-    size_t get_n() { return number_of_iterations; }
 }
 
 
