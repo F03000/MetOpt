@@ -379,18 +379,20 @@ double algo::brent_csv(const std::function<double(double)> &f, double a, double 
     }
 }
 
-void algo::create_csv(const std::function<double(double)> &f, double a, double b, double eps) {
+void algo::all_csv(const std::function<double(double)> &f, double a, double b, double eps) {
     std::ofstream file_all;
     file_all << std::setprecision(6) << std::fixed;
     file_all.open("all.csv");
     file_all << "name,result,number of iterations" << std::endl;
-    file_all << "Dichotomy," << dichotomy_csv(f, a, b, eps) << "," << number_of_iterations << std::endl;
-    file_all << "Golden section," << golden_section_csv(f, a, b, eps) << "," << number_of_iterations << std::endl;
-    file_all << "Fibonacci," << fibonacci_csv(f, a, b, eps) << "," << number_of_iterations << std::endl;
-    file_all << "Parabolic," << parabolic_csv(f, a, b, eps) << "," << number_of_iterations << std::endl;
-    file_all << "Combined Brent," << brent_csv(f, a, b, eps) << "," << number_of_iterations << std::endl;
+    file_all << "Dichotomy," << dichotomy(f, a, b, eps) << "," << number_of_iterations << std::endl;
+    file_all << "Golden section," << golden_section(f, a, b, eps) << "," << number_of_iterations << std::endl;
+    file_all << "Fibonacci," << fibonacci(f, a, b, eps) << "," << number_of_iterations << std::endl;
+    file_all << "Parabolic," << parabolic(f, a, b, eps) << "," << number_of_iterations << std::endl;
+    file_all << "Combined Brent," << brent(f, a, b, eps) << "," << number_of_iterations << std::endl;
     file_all.close();
+}
 
+void algo::eps_csv(const std::function<double(double)> &f, double a, double b, double eps) {
     std::ofstream file_eps;
     file_eps.open("eps.csv");
     file_eps << "eps,dichotomy,golden section,fibonacci,parabolic,combined brent" << std::endl;
@@ -399,18 +401,28 @@ void algo::create_csv(const std::function<double(double)> &f, double a, double b
         std::cout << std::setprecision(i + 1);
         std::cout << std::fixed;
         file_eps << eps << ",";
-        dichotomy(f, 0, 2 * M_PI, eps);
+        dichotomy(f, a, b, eps);
         file_eps << number_of_iterations << ",";
-        golden_section(f, 0, 2 * M_PI, eps);
+        golden_section(f, a, b, eps);
         file_eps << number_of_iterations << ",";
-        fibonacci(f, 0, 2 * M_PI, eps);
+        fibonacci(f, a, b, eps);
         file_eps << number_of_iterations << ",";
-        parabolic(f, 0, 2 * M_PI, eps);
+        parabolic(f, a, b, eps);
         file_eps << number_of_iterations << ",";
-        brent(f, 0, 2 * M_PI, eps);
+        brent(f, a, b, eps);
         file_eps << number_of_iterations << std::endl;
     }
     file_eps.close();
+}
+
+void algo::create_csv(const std::function<double(double)> &f, double a, double b, double eps) {
+    all_csv(f, a, b, eps);
+    dichotomy_csv(f, a, b, eps);
+    golden_section_csv(f, a, b, eps);
+    fibonacci_csv(f, a, b, eps);
+    parabolic_csv(f, a, b, eps);
+    brent_csv(f, a, b, eps);
+    eps_csv(f, a, b, eps);
 }
 
 #endif //METOPT_ALGO_H

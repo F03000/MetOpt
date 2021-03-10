@@ -68,14 +68,14 @@ namespace algo {
     double brent(func f, double a, double c, double eps);
 
     /**
- * Dichotomy method of finding min value
- * @require a < b && function unimodal in [a, b]
- * @param f function for research
- * @param a left border
- * @param b right border
- * @param eps absolute accuracy
- * @return Min value in given range with given accuracy
- */
+     * Dichotomy method of finding min value
+     * @require a < b && function unimodal in [a, b]
+     * @param f function for research
+     * @param a left border
+     * @param b right border
+     * @param eps absolute accuracy
+     * @return Min value in given range with given accuracy, writes data to dichotomy.csv
+     */
     double dichotomy_csv(func f, double a, double b, double eps);
 
     /**
@@ -85,7 +85,7 @@ namespace algo {
      * @param a left border
      * @param b right border
      * @param eps absolute accuracy
-     * @return Min value in given range with given accuracy
+     * @return Min value in given range with given accuracy, writes data to golden_section.csv
      */
     double golden_section_csv(func f, double a, double b, double eps);
 
@@ -96,7 +96,7 @@ namespace algo {
      * @param a left border
      * @param b right border
      * @param eps absolute accuracy
-     * @return Min value in given range with given accuracy
+     * @return Min value in given range with given accuracy, writes data to fibonacci.csv
      */
     double fibonacci_csv(func f, double a0, double b0, double eps);
 
@@ -107,7 +107,7 @@ namespace algo {
      * @param a left border
      * @param b right border
      * @param eps absolute accuracy
-     * @return Min value in given range with given accuracy
+     * @return Min value in given range with given accuracy, writes data to parabolic.csv
      */
     double parabolic_csv(func f, double a, double b, double eps);
 
@@ -118,17 +118,38 @@ namespace algo {
      * @param a left border
      * @param b right border
      * @param eps absolute accuracy
-     * @return Min value in given range with given accuracy
+     * @return Min value in given range with given accuracy, writes data to brent.csv
      */
     double brent_csv(func f, double a, double c, double eps);
 
     /**
-     * Getter for local variable number of iterations
-     * @return
+     * Function creating all.csv data file
+     * @param f function for research
+     * @param a left border
+     * @param b right border
+     * @param eps absolute accuracy
      */
-    size_t get_number_of_iterations() { return number_of_iterations; }
+    void all_csv(func f, double a, double c, double eps);
 
-    void create_csv(const std::function<double(double)> &f, double a, double c, double eps);
+    /**
+     * Function creating eps.csv data file
+     * @param f function for research
+     * @param a left border
+     * @param b right border
+     * @param eps absolute accuracy
+     */
+    void eps_csv(func f, double a, double c, double eps);
+
+    /**
+     * Function creating all .csv files
+     * @param f function for research
+     * @param a left border
+     * @param b right border
+     * @param eps absolute accuracy
+     */
+    void create_csv(func f, double a, double c, double eps);
+
+    size_t get_n() { return number_of_iterations; }
 }
 
 
