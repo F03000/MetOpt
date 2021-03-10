@@ -280,16 +280,37 @@ int main() {
         return -3.0 * x * sin(0.75 * x) + exp(-2.0 * x);
     };
 
-    std::ofstream myfile;
-    myfile << std::setprecision(6) << std::fixed;
-    myfile.open("all.csv");
-    myfile << "name,result,number of iterations" << std::endl;
-    myfile << "Dichotomy," << dichotomy(f, 0, 2 * M_PI, eps) << "," << number_of_iterations << std::endl;
-    myfile << "Golden section," << golden_section(f, 0, 2 * M_PI, eps) << "," << number_of_iterations << std::endl;
-    myfile << "Fibonacci," << fibonacci(f, 0, 2 * M_PI, eps) << "," << number_of_iterations << std::endl;
-    myfile << "Parabolic," << parabolic(f, 0, 2 * M_PI, eps) << "," << number_of_iterations << std::endl;
-    myfile << "Combined Brent," << brent(f, 0, 2 * M_PI, eps) << "," << number_of_iterations << std::endl;
-    myfile.close();
+    std::ofstream file_all;
+    file_all << std::setprecision(6) << std::fixed;
+    file_all.open("all.csv");
+    file_all << "name,result,number of iterations" << std::endl;
+    file_all << "Dichotomy," << dichotomy(f, 0, 2 * M_PI, eps) << "," << number_of_iterations << std::endl;
+    file_all << "Golden section," << golden_section(f, 0, 2 * M_PI, eps) << "," << number_of_iterations << std::endl;
+    file_all << "Fibonacci," << fibonacci(f, 0, 2 * M_PI, eps) << "," << number_of_iterations << std::endl;
+    file_all << "Parabolic," << parabolic(f, 0, 2 * M_PI, eps) << "," << number_of_iterations << std::endl;
+    file_all << "Combined Brent," << brent(f, 0, 2 * M_PI, eps) << "," << number_of_iterations << std::endl;
+    file_all.close();
+
+    std::ofstream file_eps;
+    file_eps.open("eps.csv");
+    file_eps << "eps,dichotomy,golden section,fibonacci,parabolic,combined brent" << std::endl;
+    for (int i = 0; i < 11; i++) {
+        eps = pow(10, -i);
+        std::cout << std::setprecision(i + 1);
+        std::cout << std::fixed;
+        file_eps << eps << ",";
+        dichotomy(f, 0, 2 * M_PI, eps);
+        file_eps << number_of_iterations << ",";
+        golden_section(f, 0, 2 * M_PI, eps);
+        file_eps << number_of_iterations << ",";
+        fibonacci(f, 0, 2 * M_PI, eps);
+        file_eps << number_of_iterations << ",";
+        parabolic(f, 0, 2 * M_PI, eps);
+        file_eps << number_of_iterations << ",";
+        brent(f, 0, 2 * M_PI, eps);
+        file_eps << number_of_iterations << std::endl;
+    }
+    file_eps.close();
 
     return 0;
 }
