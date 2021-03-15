@@ -64,7 +64,7 @@ double algo::fibonacci(const std::function<double(double)> &f, double a0, double
     number_of_iterations = n - 1;
     bool left = true;
     double a = a0, b = b0,
-        x1 = a + (fib_0 * (b0 - a0)) / fib_1, x2,
+        x1 = a + (fib_0  / fib_1) * (b0 - a0), x2,
         f_x1 = f(x1), f_x2;
     for (int k = 0; k < n - 2; k++) {
         if (left) {
@@ -276,11 +276,11 @@ double algo::fibonacci_csv(const std::function<double(double)> &f, double a0, do
         fib_1 += fib;
     }
 
-    number_of_iterations = n - 1;
     bool left = true;
     double a = a0, b = b0,
-            x1 = a + (fib_0 * (b0 - a0)) / fib_1, x2,
+            x1 = a + (fib_0  / fib_1) * (b0 - a0), x2,
             f_x1 = f(x1), f_x2;
+    number_of_iterations = 1;
     double prev_b_a = b - a;
     for (int k = 0; k < n - 2; k++) {
         if (left) {
@@ -294,6 +294,7 @@ double algo::fibonacci_csv(const std::function<double(double)> &f, double a0, do
             x2 = b - (x1 - a);
             f_x2 = f(x2);
         }
+        number_of_iterations++;
         myfile << k + 1 << "," << number_of_iterations << "," << a << ","  << b << "," << x1 << "," << x2 << "," <<
                f(x1) << "," << f(x2) << "," << b - a << "," << prev_b_a / (b - a) <<  std::endl;
         prev_b_a = b - a;
@@ -319,12 +320,21 @@ double algo::parabolic_csv(const std::function<double(double)> &f, double a, dou
     number_of_iterations = 3;
     double prev_b_a = x3 - x1;
     while (true) {
+        if (x3 == x1 || x2 == x1 || x3 == x2) {
+            myfile.close();
+            return x2;
+        }
         double a0 = f_x1, a1 = (f_x2 - f_x1) / (x2 - x1), a2 =
                 ((f_x3 - f_x1) / (x3 - x1) - (f_x2 - f_x1) / (x2 - x1)) / (x3 - x2);
+        if (a1 == a2) {
+            myfile.close();
+            return x2;
+        }
         double x = (x1 + x2 - (a1 / a2)) / 2;
         double f_x = f(x);
+        number_of_iterations++;
         myfile << number_of_iterations - 3 << "," << number_of_iterations << "," << x1 << "," << x2 << "," << x3
-        << "," << f_x1 << "," << x2 << "," << x3 << "," << x << "," << f_x << "," << x3 - x1 << "," << prev_b_a / (x3 - x1) <<  std::endl;
+               << "," << f_x1 << "," << x2 << "," << x3 << "," << x << "," << f_x << "," << x3 - x1 << "," << prev_b_a / (x3 - x1) <<  std::endl;
         prev_b_a = x3 - x1;
         if (fabs(x - prev_x) <= eps) {
             myfile.close();
