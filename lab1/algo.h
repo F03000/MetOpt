@@ -445,7 +445,7 @@ double algo::brent_csv(const std::function<double(double)> &f, double a, double 
 
 void algo::all_csv(const std::function<double(double)> &f, double a, double b, double eps) {
     std::ofstream file_all;
-    file_all << std::setprecision(6) << std::fixed;
+    file_all << std::setprecision(10) << std::fixed;
     file_all.open("all.csv");
     file_all << "name,result,number of iterations" << std::endl;
     file_all << "Dichotomy," << dichotomy(f, a, b, eps) << "," << number_of_iterations << std::endl;
@@ -460,7 +460,7 @@ void algo::eps_csv(const std::function<double(double)> &f, double a, double b, d
     std::ofstream file_eps;
     file_eps.open("eps.csv");
     file_eps << "eps,dichotomy,golden section,fibonacci,parabolic,combined brent" << std::endl;
-    for (int i = 0; i < 11; i++) {
+    for (int i = 0; i < 16; i++) {
         eps = pow(10, -i);
         std::cout << std::setprecision(i + 1);
         std::cout << std::fixed;
