@@ -30,9 +30,9 @@ int main() {
     /**
      * absolute accuracy
      */
-    double eps = 10e-10;
+    double eps = 10e-11;
 
-    std::cout << std::setprecision(11);
+    std::cout << std::setprecision(10);
     std::cout << std::fixed;
     log("Dichotomy", eps, algo::dichotomy(f, 0, 2 * M_PI, eps));
     log("Golden section", eps, algo::golden_section(f, 0, 2 * M_PI, eps));
