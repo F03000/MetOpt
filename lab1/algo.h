@@ -215,10 +215,10 @@ double algo::dichotomy_csv(const std::function<double(double)> &f, double a, dou
         myfile << number_of_iterations / 2 << "," << number_of_iterations << "," << a << ","  << b << "," << x1
         << "," << x2 << "," << f(x1) << "," << f(x2) << "," << b - a << "," << prev_b_a / (b - a) <<  std::endl;
         prev_b_a = b - a;
-        if (f(x1) <= f(x2)) {
-            b = x2;
-        } else {
+        if (f(x1) > f(x2)) {
             a = x1;
+        } else {
+            b = x2;
         }
     }
     myfile.close();
