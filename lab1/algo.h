@@ -10,52 +10,80 @@
 double algo::dichotomy(const std::function<double(double)> &f, double a, double b, double eps) {
     number_of_iterations = 0;
     double d = eps / 2;
-    while (fabs(b - a) / 2 > eps) {
-        number_of_iterations++;
+    while ((b - a) / 2 > eps) {
+        number_of_iterations += 2;
         double x1 = (a + b) / 2 - d;
         double x2 = (a + b) / 2 + d;
-        if (f(x1) <= f(x2)) {
-            b = x2;
-        } else {
+        if (f(x1) > f(x2)) {
             a = x1;
+        } else {
+            b = x2;
         }
     }
     return (a + b) / 2;
 }
 
 double algo::golden_section(const std::function<double(double)> &f, double a, double b, double eps) {
-    number_of_iterations = 0;
-    while (fabs(b - a) / 2 > eps) {
-        number_of_iterations++;
-        double x1 = b - (b - a) / GOLDEN_RATIO;
-        double x2 = a + (b - a) / GOLDEN_RATIO;
-        if (f(x1) <= f(x2)) {
-            b = x2;
+    number_of_iterations = 1;
+    bool left = true;
+    double x1 = a + (b - a) / GOLDEN_RATIO, x2,
+        f_x1 = f(x1), f_x2;
+    while ((b - a) / 2 > eps) {
+        if (left) {
+            x2 = x1;
+            f_x2 = f_x1;
+            x1 = b - (b - a) / GOLDEN_RATIO;
+            f_x1 = f(x1);
         } else {
+            x1 = x2;
+            f_x1 = f_x2;
+            x2 = a + (b - a) / GOLDEN_RATIO;
+            f_x2 = f(x2);
+        }
+        number_of_iterations++;
+        if (f_x1 > f_x2) {
             a = x1;
+            left = false;
+        } else {
+            b = x2;
+            left = true;
         }
     }
     return (a + b) / 2;
 }
 
 double algo::fibonacci(const std::function<double(double)> &f, double a0, double b0, double eps) {
-    std::vector<double> fib(2);
-    int n = 0;
-    fib[n++] = 1;
-    fib[n++] = 1;
-    for (; fib.back() <= (b0 - a0) / eps; ++n) {
-        fib.push_back(fib.back() + fib[n - 2]);
+    double fib_0 = 1, fib_1 = 1;
+    int n = 2;
+    for (; (b0 - a0) / fib_1 >= eps; ++n) {
+        double fib = fib_0;
+        fib_0 = fib_1;
+        fib_1 += fib;
     }
-    number_of_iterations = n - 2;
 
-    double a = a0, b = b0;
-    for (int k = 0; k < number_of_iterations; k++) {
-        double x1 = a + (fib[number_of_iterations - k - 1] * (b0 - a0)) / fib.back();
-        double x2 = a + (fib[number_of_iterations - k] * (b0 - a0)) / fib.back();
-        if (f(x1) <= f(x2)) {
-            b = x2;
+    number_of_iterations = n - 1;
+    bool left = true;
+    double a = a0, b = b0,
+        x1 = a + (fib_0 * (b0 - a0)) / fib_1, x2,
+        f_x1 = f(x1), f_x2;
+    for (int k = 0; k < n - 2; k++) {
+        if (left) {
+            x2 = x1;
+            f_x2 = f_x1;
+            x1 = a + (b - x2);
+            f_x1 = f(x1);
         } else {
+            x1 = x2;
+            f_x1 = f_x2;
+            x2 = b - (x1 - a);
+            f_x2 = f(x2);
+        }
+        if (f_x1 > f_x2) {
             a = x1;
+            left = false;
+        } else {
+            b = x2;
+            left = true;
         }
     }
     return (a + b) / 2;
@@ -64,9 +92,8 @@ double algo::fibonacci(const std::function<double(double)> &f, double a0, double
 double algo::parabolic(const std::function<double(double)> &f, double a, double b, double eps) {
     double prev_x = a, x1 = a, x2 = (a + b) / 2, x3 = b;
     double f_x1 = f(x1), f_x2 = f(x2), f_x3 = f(x3);
-    number_of_iterations = 0;
+    number_of_iterations = 3;
     while (true) {
-        number_of_iterations++;
         if (x3 == x1 || x2 == x1 || x3 == x2) {
             return x2;
         }
@@ -77,6 +104,7 @@ double algo::parabolic(const std::function<double(double)> &f, double a, double 
         }
         double x = (x1 + x2 - (a1 / a2)) / 2;
         double f_x = f(x);
+        number_of_iterations++;
         if (fabs(x - prev_x) <= eps) {
             return x;
         }
@@ -106,7 +134,7 @@ double algo::parabolic(const std::function<double(double)> &f, double a, double 
 }
 
 double algo::brent(const std::function<double(double)> &f, double a, double c, double eps) {
-    number_of_iterations = 0;
+    number_of_iterations = 1;
     double x, w, v, x_res, w_res, v_res, d, e;
     x = v = w = (a + c) / 2;
     x_res = w_res = v_res = f(x);
@@ -176,16 +204,16 @@ double algo::dichotomy_csv(const std::function<double(double)> &f, double a, dou
     std::ofstream myfile;
     myfile.open("dichotomy.csv");
     myfile << std::setprecision(6) << std::fixed;
-    myfile << "n,a,b,x1,x2,f(x1),f(x2),b-a,k" << std::endl;
+    myfile << "n,number of iterations,a,b,x1,x2,f(x1),f(x2),b-a,k" << std::endl;
     number_of_iterations = 0;
     double d = eps / 2;
     double prev_b_a = b - a;
     while (fabs(b - a) / 2 > eps) {
-        number_of_iterations++;
+        number_of_iterations += 2;
         double x1 = (a + b) / 2 - d;
         double x2 = (a + b) / 2 + d;
-        myfile << number_of_iterations << "," << a << ","  << b << "," << x1 << "," << x2 << "," <<
-               f(x1) << "," << f(x2) << "," << b - a << "," << prev_b_a / (b - a) <<  std::endl;
+        myfile << number_of_iterations / 2 << "," << number_of_iterations << "," << a << ","  << b << "," << x1
+        << "," << x2 << "," << f(x1) << "," << f(x2) << "," << b - a << "," << prev_b_a / (b - a) <<  std::endl;
         prev_b_a = b - a;
         if (f(x1) <= f(x2)) {
             b = x2;
@@ -201,20 +229,34 @@ double algo::golden_section_csv(const std::function<double(double)> &f, double a
     std::ofstream myfile;
     myfile.open("golden_section.csv");
     myfile << std::setprecision(6) << std::fixed;
-    myfile << "n,a,b,x1,x2,f(x1),f(x2),b-a,k" << std::endl;
+    myfile << "n,number of iterations,a,b,x1,x2,f(x1),f(x2),b-a,k" << std::endl;
     double prev_b_a = b - a;
-    number_of_iterations = 0;
-    while (fabs(b - a) / 2 > eps) {
-        number_of_iterations++;
-        double x1 = b - (b - a) / GOLDEN_RATIO;
-        double x2 = a + (b - a) / GOLDEN_RATIO;
-        myfile << number_of_iterations << "," << a << ","  << b << "," << x1 << "," << x2 << "," <<
-               f(x1) << "," << f(x2) << "," << b - a << "," << prev_b_a / (b - a) <<  std::endl;
-        prev_b_a = b - a;
-        if (f(x1) <= f(x2)) {
-            b = x2;
+    number_of_iterations = 1;
+    bool left = true;
+    double x1 = a + (b - a) / GOLDEN_RATIO, x2,
+            f_x1 = f(x1), f_x2;
+    while ((b - a) / 2 > eps) {
+        if (left) {
+            x2 = x1;
+            f_x2 = f_x1;
+            x1 = b - (b - a) / GOLDEN_RATIO;
+            f_x1 = f(x1);
         } else {
+            x1 = x2;
+            f_x1 = f_x2;
+            x2 = a + (b - a) / GOLDEN_RATIO;
+            f_x2 = f(x2);
+        }
+        number_of_iterations++;
+        myfile << number_of_iterations - 1 << "," << number_of_iterations << "," << a << ","  << b << "," << x1
+        << "," << x2 << "," << f(x1) << "," << f(x2) << "," << b - a << "," << prev_b_a / (b - a) <<  std::endl;
+        prev_b_a = b - a;
+        if (f_x1 > f_x2) {
             a = x1;
+            left = false;
+        } else {
+            b = x2;
+            left = true;
         }
     }
     myfile.close();
@@ -225,28 +267,42 @@ double algo::fibonacci_csv(const std::function<double(double)> &f, double a0, do
     std::ofstream myfile;
     myfile.open("fibonacci.csv");
     myfile << std::setprecision(6) << std::fixed;
-    myfile << "n,a,b,x1,x2,f(x1),f(x2),b-a,k" << std::endl;
-    std::vector<double> fib(2);
-    int n = 0;
-    fib[n++] = 1;
-    fib[n++] = 1;
-    for (; fib.back() <= (b0 - a0) / eps; ++n) {
-        fib.push_back(fib.back() + fib[n - 2]);
+    myfile << "n,number of iterations,a,b,x1,x2,f(x1),f(x2),b-a,k" << std::endl;
+    double fib_0 = 1, fib_1 = 1;
+    int n = 2;
+    for (; (b0 - a0) / fib_1 >= eps; ++n) {
+        double fib = fib_0;
+        fib_0 = fib_1;
+        fib_1 += fib;
     }
-    number_of_iterations = n - 2;
 
-    double a = a0, b = b0;
+    number_of_iterations = n - 1;
+    bool left = true;
+    double a = a0, b = b0,
+            x1 = a + (fib_0 * (b0 - a0)) / fib_1, x2,
+            f_x1 = f(x1), f_x2;
     double prev_b_a = b - a;
-    for (int k = 0; k < number_of_iterations; k++) {
-        double x1 = a + (fib[number_of_iterations - k - 1] * (b0 - a0)) / fib.back();
-        double x2 = a + (fib[number_of_iterations - k] * (b0 - a0)) / fib.back();
-        myfile << k + 1 << "," << a << ","  << b << "," << x1 << "," << x2 << "," <<
+    for (int k = 0; k < n - 2; k++) {
+        if (left) {
+            x2 = x1;
+            f_x2 = f_x1;
+            x1 = a + (b - x2);
+            f_x1 = f(x1);
+        } else {
+            x1 = x2;
+            f_x1 = f_x2;
+            x2 = b - (x1 - a);
+            f_x2 = f(x2);
+        }
+        myfile << k + 1 << "," << number_of_iterations << "," << a << ","  << b << "," << x1 << "," << x2 << "," <<
                f(x1) << "," << f(x2) << "," << b - a << "," << prev_b_a / (b - a) <<  std::endl;
         prev_b_a = b - a;
-        if (f(x1) <= f(x2)) {
-            b = x2;
-        } else {
+        if (f_x1 > f_x2) {
             a = x1;
+            left = false;
+        } else {
+            b = x2;
+            left = true;
         }
     }
     myfile.close();
@@ -257,19 +313,18 @@ double algo::parabolic_csv(const std::function<double(double)> &f, double a, dou
     std::ofstream myfile;
     myfile.open("parabolic.csv");
     myfile << std::setprecision(6) << std::fixed;
-    myfile << "n,x1,x2,x3,f(x1),f(x2),f(x3),x,f(x),b-a,k" << std::endl;
+    myfile << "n,number of iterations,x1,x2,x3,f(x1),f(x2),f(x3),x,f(x),b-a,k" << std::endl;
     double prev_x = a, x1 = a, x2 = (a + b) / 2, x3 = b;
     double f_x1 = f(x1), f_x2 = f(x2), f_x3 = f(x3);
-    number_of_iterations = 0;
+    number_of_iterations = 3;
     double prev_b_a = x3 - x1;
     while (true) {
-        number_of_iterations++;
         double a0 = f_x1, a1 = (f_x2 - f_x1) / (x2 - x1), a2 =
                 ((f_x3 - f_x1) / (x3 - x1) - (f_x2 - f_x1) / (x2 - x1)) / (x3 - x2);
         double x = (x1 + x2 - (a1 / a2)) / 2;
         double f_x = f(x);
-        myfile << number_of_iterations << "," << x1 << "," << x2 << "," << x3 << "," << f_x1 << "," <<
-               x2 << "," << x3 << "," << x << "," << f_x << "," << x3 - x1 << "," << prev_b_a / (x3 - x1) <<  std::endl;
+        myfile << number_of_iterations - 3 << "," << number_of_iterations << "," << x1 << "," << x2 << "," << x3
+        << "," << f_x1 << "," << x2 << "," << x3 << "," << x << "," << f_x << "," << x3 - x1 << "," << prev_b_a / (x3 - x1) <<  std::endl;
         prev_b_a = x3 - x1;
         if (fabs(x - prev_x) <= eps) {
             myfile.close();
@@ -304,10 +359,10 @@ double algo::brent_csv(const std::function<double(double)> &f, double a, double 
     std::ofstream myfile;
     myfile.open("brent.csv");
     myfile << std::setprecision(6) << std::fixed;
-    myfile << "n,a,c,x,f(x),w,f(w),u,f(u),b-a,k,method" << std::endl;
+    myfile << "n,number of iterations,a,c,x,f(x),w,f(w),u,f(u),b-a,k,method" << std::endl;
     std::string method;
     double prev_c_a = c - a;
-    number_of_iterations = 0;
+    number_of_iterations = 1;
     double x, w, v, x_res, w_res, v_res, d, e;
     x = v = w = (a + c) / 2;
     x_res = w_res = v_res = f(x);
@@ -340,8 +395,8 @@ double algo::brent_csv(const std::function<double(double)> &f, double a, double 
             }
             method = "Golden section";
         }
-        myfile << number_of_iterations << "," << a << ","  << c << "," << x << "," << x_res << "," << w << ","
-               << w_res << "," << u << "," << f(u) << "," << c - a << "," << prev_c_a / (c - a) << "," << method << std::endl;
+        myfile << number_of_iterations - 1 << "," << number_of_iterations << "," << a << ","  << c << "," << x << ","
+        << x_res << "," << w << "," << w_res << "," << u << "," << f(u) << "," << c - a << "," << prev_c_a / (c - a) << "," << method << std::endl;
         prev_c_a = c - a;
         if (fabs(u - x) < eps) {
             myfile.close();

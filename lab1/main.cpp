@@ -19,11 +19,6 @@ void log(const std::string& name, double eps, double res) {
 
 int main() {
     /**
-     * absolute accuracy
-     */
-    double eps = 10e-6;
-
-    /**
     * Function for research
     * @param x function argument
     * @return function value
@@ -32,7 +27,12 @@ int main() {
         return -3.0 * x * sin(0.75 * x) + exp(-2.0 * x);
     };
 
-    std::cout << std::setprecision(8);
+    /**
+     * absolute accuracy
+     */
+    double eps = 10e-10;
+
+    std::cout << std::setprecision(11);
     std::cout << std::fixed;
     log("Dichotomy", eps, algo::dichotomy(f, 0, 2 * M_PI, eps));
     log("Golden section", eps, algo::golden_section(f, 0, 2 * M_PI, eps));
