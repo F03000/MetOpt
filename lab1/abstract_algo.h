@@ -9,7 +9,7 @@ namespace algo {
     /// golden ratio for golden section method
     const double GOLDEN_RATIO = (1 + sqrt(5)) / 2;
 
-    /// Saving number of iterations
+    /// Counts function calls
     size_t number_of_iterations = 0;
 
     /**
