@@ -24,10 +24,10 @@ double algo::dichotomy(const std::function<double(double)> &f, double a, double 
 }
 
 double algo::golden_section(const std::function<double(double)> &f, double a, double b, double eps) {
-    number_of_iterations = 1;
     bool left = true;
     double x1 = a + (b - a) / GOLDEN_RATIO, x2,
         f_x1 = f(x1), f_x2;
+    number_of_iterations = 1;
     while ((b - a) / 2 > eps) {
         if (left) {
             x2 = x1;
@@ -52,32 +52,32 @@ double algo::golden_section(const std::function<double(double)> &f, double a, do
     return (a + b) / 2;
 }
 
-double algo::fibonacci(const std::function<double(double)> &f, double a0, double b0, double eps) {
-    double fib_0 = 1, fib_1 = 1;
+double algo::fibonacci(const std::function<double(double)> &f, double a, double b, double eps) {
+    std::vector<double> fib;
+    fib.push_back(1);
+    fib.push_back(1);
     int n = 2;
-    for (; (b0 - a0) / fib_1 >= eps; ++n) {
-        double fib = fib_0;
-        fib_0 = fib_1;
-        fib_1 += fib;
+    for (; (b - a) / eps >= fib.back(); ++n) {
+        fib.push_back(fib.back() + fib[n - 2]);
     }
 
-    number_of_iterations = n - 1;
     bool left = true;
-    double a = a0, b = b0,
-        x1 = a + (fib_0  / fib_1) * (b0 - a0), x2,
+    double x1 = a + (fib[n - 2]  / fib[n - 1]) * (b - a), x2,
         f_x1 = f(x1), f_x2;
+    number_of_iterations = 1;
     for (int k = 0; k < n - 2; k++) {
         if (left) {
             x2 = x1;
             f_x2 = f_x1;
-            x1 = a + (b - x2);
+            x1 = a + (fib[n - 3 - k] / fib[n - 1 - k]) * (b - a);
             f_x1 = f(x1);
         } else {
             x1 = x2;
             f_x1 = f_x2;
-            x2 = b - (x1 - a);
+            x2 = a + (fib[n - 2 - k] / fib[n - 1 - k]) * (b - a);
             f_x2 = f(x2);
         }
+        number_of_iterations++;
         if (f_x1 > f_x2) {
             a = x1;
             left = false;
@@ -263,22 +263,21 @@ double algo::golden_section_csv(const std::function<double(double)> &f, double a
     return (a + b) / 2;
 }
 
-double algo::fibonacci_csv(const std::function<double(double)> &f, double a0, double b0, double eps) {
+double algo::fibonacci_csv(const std::function<double(double)> &f, double a, double b, double eps) {
     std::ofstream myfile;
     myfile.open("fibonacci.csv");
     myfile << std::setprecision(6) << std::fixed;
     myfile << "n,number of iterations,a,b,x1,x2,f(x1),f(x2),b-a,k" << std::endl;
-    double fib_0 = 1, fib_1 = 1;
+    std::vector<double> fib;
+    fib.push_back(1);
+    fib.push_back(1);
     int n = 2;
-    for (; (b0 - a0) / fib_1 >= eps; ++n) {
-        double fib = fib_0;
-        fib_0 = fib_1;
-        fib_1 += fib;
+    for (; (b - a) / eps >= fib.back(); ++n) {
+        fib.push_back(fib.back() + fib[n - 2]);
     }
 
     bool left = true;
-    double a = a0, b = b0,
-            x1 = a + (fib_0  / fib_1) * (b0 - a0), x2,
+    double x1 = a + (fib[n - 2]  / fib[n - 1]) * (b - a), x2,
             f_x1 = f(x1), f_x2;
     number_of_iterations = 1;
     double prev_b_a = b - a;
@@ -286,12 +285,12 @@ double algo::fibonacci_csv(const std::function<double(double)> &f, double a0, do
         if (left) {
             x2 = x1;
             f_x2 = f_x1;
-            x1 = a + (b - x2);
+            x1 = a + (fib[n - 3 - k] / fib[n - 1 - k]) * (b - a);
             f_x1 = f(x1);
         } else {
             x1 = x2;
             f_x1 = f_x2;
-            x2 = b - (x1 - a);
+            x2 = a + (fib[n - 2 - k] / fib[n - 1 - k]) * (b - a);
             f_x2 = f(x2);
         }
         number_of_iterations++;

@@ -43,7 +43,7 @@ namespace algo {
      * @param eps absolute accuracy
      * @return Min value in given range with given accuracy
      */
-    double fibonacci(func f, double a0, double b0, double eps);
+    double fibonacci(func f, double a, double b, double eps);
 
     /**
      * Parabolic method of finding min value
