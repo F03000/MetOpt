@@ -10,26 +10,29 @@ int n;
 
 // Считаем квадратичную функцию в точке
 double f(const vector& x) {
-    return scalar(x, A * x + B) + C;
+    return scalar(x, (A * x) += B) + C;
 }
 
 // Градиентный спуск
 double gradient_descent(vector x0, double alpha, double eps) {
-    vector x_cur = std::move(x0), x_previous;
+    vector x_cur = std::move(x0);
     double f_x_cur = f(x_cur);
+
     while (true) {
         vector gradient = (A * x_cur) + B;
         if (module(gradient) < eps) {
             return f_x_cur;
         }
+
         vector x_new = x_cur - (gradient * alpha);
         double f_x_new = f(x_new);
-        if (f_x_new < f_x_cur) {
-            x_cur = x_new;
-            f_x_cur = f_x_new;
-        } else {
+        while (f_x_new >= f_x_cur) {
             alpha /= 2;
+            x_new = x_cur - (gradient * alpha);
+            f_x_new = f(x_new);
         }
+        x_cur = x_new;
+        f_x_cur = f_x_new;
     }
 }
 
