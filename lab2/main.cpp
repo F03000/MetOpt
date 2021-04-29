@@ -17,9 +17,9 @@ double f(const vector_& x) {
 }
 
 // Градиентный спуск
-double gradient_descent(vector_ x0, double alpha, double eps) {
+double gradient_descent(const vector_& x0, double alpha, double eps) {
     number_of_iterations = 0;
-    vector_ x_cur = std::move(x0);
+    vector_ x_cur = x0;
     double f_x_cur = f(x_cur);
 
     while (true) {
@@ -45,7 +45,7 @@ double gradient_descent(vector_ x0, double alpha, double eps) {
 // Наискорейший спуск
 double steepest_descent(const vector_& x0, double alpha, double eps) {
     number_of_iterations = 0;
-    const vector_& x_cur = x0;
+    vector_ x_cur = x0;
     double f_x_cur = f(x_cur);
 
     while (true) {
