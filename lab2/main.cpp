@@ -1,5 +1,6 @@
 #include <iostream>
 #include <utility>
+#include <cfloat>
 
 #include "algo.h"
 #include "linear_algebra.h"
@@ -19,24 +20,24 @@ double f(const vector_& x) {
 double gradient_descent(vector_ x0, double alpha, double eps) {
     number_of_iterations = 0;
     vector_ x_cur = std::move(x0);
+    number_of_iterations++;
     double f_x_cur = f(x_cur);
 
     while (true) {
-        vector_ gradient = (A * x_cur) += B;
+        vector_ gradient = (A * x_cur) * 2 += B;
         if (module(gradient) < eps) {
             return f_x_cur;
         }
 
-        number_of_iterations++;
         vector_ x_new = x_cur - (gradient * alpha);
+        number_of_iterations++;
         double f_x_new = f(x_new);
-        while (f_x_new >= f_x_cur) {
+        if (f_x_new < f_x_cur) {
+            x_cur = x_new;
+            f_x_cur = f_x_new;
+        } else {
             alpha /= 2;
-            x_new = x_cur - (gradient * alpha);
-            f_x_new = f(x_new);
         }
-        x_cur = x_new;
-        f_x_cur = f_x_new;
     }
 }
 
@@ -44,10 +45,11 @@ double gradient_descent(vector_ x0, double alpha, double eps) {
 double steepest_descent(const vector_& x0, double alpha, double eps) {
     number_of_iterations = 0;
     const vector_& x_cur = x0;
+    number_of_iterations++;
     double f_x_cur = f(x_cur);
 
     while (true) {
-        vector_ gradient = (A * x_cur) += B;
+        vector_ gradient = (A * x_cur) * 2 += B;
         if (module(gradient) < eps) {
             return f_x_cur;
         }
@@ -55,25 +57,53 @@ double steepest_descent(const vector_& x0, double alpha, double eps) {
         number_of_iterations++;
         // Одномерная оптимизация
         auto f1 = [&](double x) {
-            return f(x_cur * x);
+            number_of_iterations++;
+            return f(x_cur - gradient * x);
         };
 
         // выбрать любой способ:
-//        alpha = algo::dichotomy(f1, 0, alpha, eps);
-//        alpha = algo::golden_section(f1, 0, alpha, eps);
-        alpha = algo::fibonacci(f1, 0, alpha, eps);
-//        alpha = algo::parabolic(f1, 0, alpha, eps);
-//        alpha = algo::brent(f1, 0, alpha, eps);
+//        alpha = algo::dichotomy(f1, 0, DBL_MAX, eps);
+//        alpha = algo::golden_section(f1, 0, DBL_MAX, eps);
+        alpha = algo::fibonacci(f1, 0, 10000, eps);
+//        alpha = algo::parabolic(f1, 0, DBL_MAX, eps);
+//        alpha = algo::brent(f1, 0, DBL_MAX, eps);
 
         x_cur -= (gradient *= alpha);
+        number_of_iterations++;
         f_x_cur = f(x_cur);
     }
 }
 
 // Сопряженный градиент
-double conjugate_gradient(vector_ x0, double alpha, double eps) {
-    // TODO
-    return 0;
+double conjugate_gradient(vector_ x0, double eps) {
+    vector_ x_cur = std::move(x0);
+    vector_ gradient = (A * x_cur) * 2 += B;
+    vector_ p_cur = vector_(n, 0) - gradient;
+    while (true) {
+        double alpha;
+        // Одномерная оптимизация
+        auto f1 = [&](double x) {
+            number_of_iterations++;
+            return f(x_cur - gradient * x);
+        };
+
+        // выбрать любой способ:
+//        alpha = algo::dichotomy(f1, 0, DBL_MAX, eps);
+//        alpha = algo::golden_section(f1, 0, DBL_MAX, eps);
+        alpha = algo::fibonacci(f1, 0, 10000, eps);
+//        alpha = algo::parabolic(f1, 0, DBL_MAX, eps);
+//        alpha = algo::brent(f1, 0, DBL_MAX, eps);
+        vector_ x_new = x_cur + p_cur * alpha;
+        vector_ gradient_new = (A * x_new) * 2 += B;
+        if (module(gradient) < eps) {
+            number_of_iterations++;
+            return f(x_new);
+        }
+        double beta = module(gradient_new) * module(gradient_new) / (module(gradient) * module(gradient));
+        p_cur = p_cur * beta - gradient_new;
+        gradient = gradient_new;
+        x_cur = x_new;
+    }
 }
 
 // Консольный ввод функции, задается в виде:
@@ -102,10 +132,10 @@ void scanFunction() {
 // Инициализация вручную
 void init() {
     n = 2;
-    A = {{211, -420},
-         {0, 211}};
-    B = {-192, 50};
-    C = -25;
+    A = {{3, 2},
+         {2, 2}};
+    B = {2, -3};
+    C = -3;
 }
 
 // Логгер
@@ -123,10 +153,11 @@ int main() {
     init();
 
     // Начальные параметры:
-    double eps = 0.001;
+    double eps = 0.01;
     double alpha = 0.1;
-
+    system("chcp 65001");
     log("Градиентный спуск", eps, gradient_descent(vector_(n, 1), alpha, eps));
-    log("Наискорейший спуск", eps, steepest_descent(vector_(n, 1), alpha, eps));
-//    log("Сопряженный градиент", eps, conjugate_gradient(vector_(n, 1), alpha, eps));
+//    log("Наискорейший спуск", eps, steepest_descent(vector_(n, 1), alpha, eps));
+    log("Сопряженный градиент", eps, conjugate_gradient(vector_(n, 1), eps));
+
 }
