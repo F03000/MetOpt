@@ -20,24 +20,25 @@ double f(const vector_& x) {
 double gradient_descent(vector_ x0, double alpha, double eps) {
     number_of_iterations = 0;
     vector_ x_cur = std::move(x0);
-    number_of_iterations++;
     double f_x_cur = f(x_cur);
 
     while (true) {
+        number_of_iterations++;
         vector_ gradient = (A * x_cur) * 2 += B;
         if (module(gradient) < eps) {
             return f_x_cur;
         }
 
         vector_ x_new = x_cur - (gradient * alpha);
-        number_of_iterations++;
         double f_x_new = f(x_new);
-        if (f_x_new < f_x_cur) {
-            x_cur = x_new;
-            f_x_cur = f_x_new;
-        } else {
+
+        while (f_x_new >= f_x_cur) {
             alpha /= 2;
+            x_new = x_cur - (gradient * alpha);
+            f_x_new = f(x_new);
         }
+        x_cur = x_new;
+        f_x_cur = f_x_new;
     }
 }
 
@@ -45,7 +46,6 @@ double gradient_descent(vector_ x0, double alpha, double eps) {
 double steepest_descent(const vector_& x0, double alpha, double eps) {
     number_of_iterations = 0;
     const vector_& x_cur = x0;
-    number_of_iterations++;
     double f_x_cur = f(x_cur);
 
     while (true) {
@@ -54,13 +54,12 @@ double steepest_descent(const vector_& x0, double alpha, double eps) {
             return f_x_cur;
         }
 
-        number_of_iterations++;
         // Одномерная оптимизация
         auto f1 = [&](double x) {
-            number_of_iterations++;
             return f(x_cur - gradient * x);
         };
 
+        number_of_iterations++;
         // выбрать любой способ:
 //        alpha = algo::dichotomy(f1, 0, DBL_MAX, eps);
 //        alpha = algo::golden_section(f1, 0, DBL_MAX, eps);
@@ -69,21 +68,20 @@ double steepest_descent(const vector_& x0, double alpha, double eps) {
 //        alpha = algo::brent(f1, 0, DBL_MAX, eps);
 
         x_cur -= (gradient *= alpha);
-        number_of_iterations++;
         f_x_cur = f(x_cur);
     }
 }
 
 // Сопряженный градиент
-double conjugate_gradient(vector_ x0, double eps) {
-    vector_ x_cur = std::move(x0);
+double conjugate_gradient(const vector_& x0, double eps) {
+    vector_ x_cur = x0;
     vector_ gradient = (A * x_cur) * 2 += B;
     vector_ p_cur = vector_(n, 0) - gradient;
     while (true) {
+        number_of_iterations++;
         double alpha;
         // Одномерная оптимизация
         auto f1 = [&](double x) {
-            number_of_iterations++;
             return f(x_cur - gradient * x);
         };
 
@@ -93,10 +91,10 @@ double conjugate_gradient(vector_ x0, double eps) {
         alpha = algo::fibonacci(f1, 0, 10000, eps);
 //        alpha = algo::parabolic(f1, 0, DBL_MAX, eps);
 //        alpha = algo::brent(f1, 0, DBL_MAX, eps);
+
         vector_ x_new = x_cur + p_cur * alpha;
         vector_ gradient_new = (A * x_new) * 2 += B;
         if (module(gradient) < eps) {
-            number_of_iterations++;
             return f(x_new);
         }
         double beta = module(gradient_new) * module(gradient_new) / (module(gradient) * module(gradient));
@@ -143,7 +141,7 @@ void log(const std::string& name, double eps, double res) {
     std::cout << "Method used:          " << name << std::endl;
     std::cout << "Absolute error        " << eps << std::endl;
     std::cout << "Result:               " << res << std::endl;
-    std::cout << "Number of iterations: " << algo::number_of_iterations << std::endl;
+    std::cout << "Number of iterations: " << number_of_iterations << std::endl;
     std::cout << std::endl;
 }
 
