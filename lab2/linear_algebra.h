@@ -2,6 +2,7 @@
 #define METOPT_LINEAR_ALGEBRA_H
 
 #include <cmath>
+#include <vector>
 
 typedef std::vector<std::vector<double>> matrix;
 typedef std::vector<double> vector;

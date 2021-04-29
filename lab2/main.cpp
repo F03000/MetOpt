@@ -1,7 +1,8 @@
 #include <iostream>
 #include <utility>
-#include <vector>
+
 #include "linear_algebra.h"
+#include "algo.h"
 
 matrix A;
 vector B;
@@ -19,7 +20,7 @@ double gradient_descent(vector x0, double alpha, double eps) {
     double f_x_cur = f(x_cur);
 
     while (true) {
-        vector gradient = (A * x_cur) + B;
+        vector gradient = (A * x_cur) += B;
         if (module(gradient) < eps) {
             return f_x_cur;
         }
@@ -36,14 +37,34 @@ double gradient_descent(vector x0, double alpha, double eps) {
     }
 }
 
-// Наиискорейший спуск
-double steepest_descent() {
-    // TODO
-    return 0;
+// Наискорейший спуск
+double steepest_descent(const vector& x0, double alpha, double eps) {
+    const vector& x_cur = x0;
+    double f_x_cur = f(x_cur);
+
+    while (true) {
+        vector gradient = (A * x_cur) += B;
+        if (module(gradient) < eps) {
+            return f_x_cur;
+        }
+
+        // single-dimension minimisation
+        auto f1 = [&](double x) {
+            return f(x_cur * x);
+        };
+//        alpha = algo::dichotomy(f1, 0, alpha, eps);
+//        alpha = algo::golden_section(f1, 0, alpha, eps);
+        alpha = algo::fibonacci(f1, 0, alpha, eps);
+//        alpha = algo::parabolic(f1, 0, alpha, eps);
+//        alpha = algo::brent(f1, 0, alpha, eps);
+
+        x_cur -= (gradient *= alpha);
+        f_x_cur = f(x_cur);
+    }
 }
 
 // Сопряженный градиент
-double conjugate_gradient() {
+double conjugate_gradient(vector x0, double alpha, double eps) {
     // TODO
     return 0;
 }
@@ -85,4 +106,6 @@ int main() {
     init();
 
     std::cout << gradient_descent(vector(n, 1), 0.1, 0.01);
+    std::cout << steepest_descent(vector(n, 1), 0.1, 0.01);
+    std::cout << conjugate_gradient(vector(n, 1), 0.1, 0.01);
 }
