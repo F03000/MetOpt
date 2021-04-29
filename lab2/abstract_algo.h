@@ -2,6 +2,7 @@
 #define METOPT_ABSTRACT_ALGO_H
 
 #include <functional>
+#include <cmath>
 
 namespace algo {
     typedef const std::function<double(double)> &func;
