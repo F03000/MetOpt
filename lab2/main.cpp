@@ -8,7 +8,7 @@ matrix_ A;
 vector_ B;
 double C;
 int n;
-double L = 10000;
+double max_alpha = 0.01;
 int number_of_iterations;
 
 // Считаем квадратичную функцию в точке
@@ -21,7 +21,7 @@ double gradient_descent(const vector_& x0, double eps) {
     number_of_iterations = 0;
     vector_ x_cur = x0;
     double f_x_cur = f(x_cur);
-    double alpha = L;
+    double alpha = max_alpha;
 
     while (true) {
         number_of_iterations++;
@@ -62,11 +62,11 @@ double steepest_descent(const vector_& x0, double eps) {
         };
 
         // выбрать любой способ:
-//        alpha = algo::dichotomy(f1, 0, DBL_MAX, eps);
-//        alpha = algo::golden_section(f1, 0, DBL_MAX, eps);
-        alpha = algo::fibonacci(f1, 0, L, eps);
-//        alpha = algo::parabolic(f1, 0, DBL_MAX, eps);
-//        alpha = algo::brent(f1, 0, DBL_MAX, eps);
+//        alpha = algo::dichotomy(f1, 0, max_alpha, eps);
+//        alpha = algo::golden_section(f1, 0, max_alpha, eps);
+        alpha = algo::fibonacci(f1, 0, max_alpha, eps);
+//        alpha = algo::parabolic(f1, 0, max_alpha, eps);
+//        alpha = algo::brent(f1, 0, max_alpha, eps);
 
         x_cur = x_cur - gradient * alpha;
     }
@@ -88,11 +88,11 @@ double conjugate_gradient(const vector_& x0, double eps) {
         };
 
         // выбрать любой способ:
-//        alpha = algo::dichotomy(f1, 0, DBL_MAX, eps);
-//        alpha = algo::golden_section(f1, 0, DBL_MAX, eps);
-        alpha = algo::fibonacci(f1, 0, L, eps);
-//        alpha = algo::parabolic(f1, 0, DBL_MAX, eps);
-//        alpha = algo::brent(f1, 0, DBL_MAX, eps);
+//        alpha = algo::dichotomy(f1, 0, max_alpha, eps);
+//        alpha = algo::golden_section(f1, 0, max_alpha, eps);
+        alpha = algo::fibonacci(f1, 0, max_alpha, eps);
+//        alpha = algo::parabolic(f1, 0, max_alpha, eps);
+//        alpha = algo::brent(f1, 0, max_alpha, eps);
 
         vector_ x_new = x_cur + p_cur * alpha;
         vector_ gradient_new = (A * x_new) * 2 + B;
@@ -120,13 +120,13 @@ void scanFunction() {
     std::cin >> n;
     B.resize(n);
     A.resize(n, vector_(n));
-    std::cout << "Enter matrix_ A" << std::endl;
+    std::cout << "Enter matrix A" << std::endl;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             std::cin >> A[i][j];
         }
     }
-    std::cout << "Enter vector_ B" << std::endl;
+    std::cout << "Enter vector B" << std::endl;
     for (int i = 0; i < n; i++) {
         std::cin >> B[i];
     }
@@ -165,5 +165,4 @@ int main() {
     log("Градиентный спуск", eps, gradient_descent(vector_(n, 1), eps));
     log("Наискорейший спуск", eps, steepest_descent(vector_(n, 1), eps));
     log("Сопряженный градиент", eps, conjugate_gradient(vector_(n, 1), eps));
-
 }
