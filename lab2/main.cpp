@@ -1,6 +1,5 @@
 #include <iostream>
-#include <utility>
-#include <cfloat>
+#include <iomanip>
 
 #include "algo.h"
 #include "linear_algebra.h"
@@ -9,6 +8,7 @@ matrix_ A;
 vector_ B;
 double C;
 int n;
+double L = 10000;
 int number_of_iterations;
 
 // Считаем квадратичную функцию в точке
@@ -17,10 +17,11 @@ double f(const vector_& x) {
 }
 
 // Градиентный спуск
-double gradient_descent(const vector_& x0, double alpha, double eps) {
+double gradient_descent(const vector_& x0, double eps) {
     number_of_iterations = 0;
     vector_ x_cur = x0;
     double f_x_cur = f(x_cur);
+    double alpha = L;
 
     while (true) {
         number_of_iterations++;
@@ -43,12 +44,14 @@ double gradient_descent(const vector_& x0, double alpha, double eps) {
 }
 
 // Наискорейший спуск
-double steepest_descent(const vector_& x0, double alpha, double eps) {
+double steepest_descent(const vector_& x0, double eps) {
     number_of_iterations = 0;
     vector_ x_cur = x0;
     double f_x_cur = f(x_cur);
+    double alpha = L;
 
     while (true) {
+        number_of_iterations++;
         vector_ gradient = (A * x_cur) * 2 += B;
         if (module(gradient) < eps) {
             return f_x_cur;
@@ -59,7 +62,6 @@ double steepest_descent(const vector_& x0, double alpha, double eps) {
             return f(x_cur - gradient * x);
         };
 
-        number_of_iterations++;
         // выбрать любой способ:
 //        alpha = algo::dichotomy(f1, 0, DBL_MAX, eps);
 //        alpha = algo::golden_section(f1, 0, DBL_MAX, eps);
@@ -77,9 +79,10 @@ double conjugate_gradient(const vector_& x0, double eps) {
     vector_ x_cur = x0;
     vector_ gradient = (A * x_cur) * 2 += B;
     vector_ p_cur = vector_(n, 0) - gradient;
+    double alpha;
+
     while (true) {
         number_of_iterations++;
-        double alpha;
         // Одномерная оптимизация
         auto f1 = [&](double x) {
             return f(x_cur - gradient * x);
@@ -97,7 +100,12 @@ double conjugate_gradient(const vector_& x0, double eps) {
         if (module(gradient) < eps) {
             return f(x_new);
         }
-        double beta = module(gradient_new) * module(gradient_new) / (module(gradient) * module(gradient));
+        double beta;
+        if (number_of_iterations % n == 0) {
+            beta = 0;
+        } else {
+            beta = module(gradient_new) * module(gradient_new) / (module(gradient) * module(gradient));
+        }
         p_cur = p_cur * beta - gradient_new;
         gradient = gradient_new;
         x_cur = x_new;
@@ -151,11 +159,12 @@ int main() {
     init();
 
     // Начальные параметры:
-    double eps = 0.01;
-    double alpha = 0.1;
-    system("chcp 65001");
-    log("Градиентный спуск", eps, gradient_descent(vector_(n, 1), alpha, eps));
-//    log("Наискорейший спуск", eps, steepest_descent(vector_(n, 1), alpha, eps));
+    double eps = 0.0001;
+//    system("chcp 65001");
+    std::cout << std::setprecision(5) << std::fixed;
+
+    log("Градиентный спуск", eps, gradient_descent(vector_(n, 1), eps));
+//    log("Наискорейший спуск", eps, steepest_descent(vector_(n, 1), eps));
     log("Сопряженный градиент", eps, conjugate_gradient(vector_(n, 1), eps));
 
 }
