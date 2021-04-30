@@ -17,13 +17,6 @@ double scalar(const vector_& v1, const vector_& v2) {
 }
 
 // Умножение вектора на число
-vector_ operator*=(vector_ &v, double a) {
-    for (double & i : v) {
-        i *= a;
-    }
-    return v;
-}
-
 vector_ operator*(const vector_ &v, double a) {
     vector_ t = vector_(v.size());
     for (int i = 0; i < v.size(); ++i) {
@@ -33,27 +26,20 @@ vector_ operator*(const vector_ &v, double a) {
 }
 
 // Сложение векторов
-vector_ operator+=(vector_ v1, const vector_& v2) {
-    for (int i = 0; i < v1.size(); i++) {
-        v1[i] += v2[i];
-    }
-    return v1;
-}
-
 vector_ operator+(const vector_& v1, const vector_& v2) {
-    return vector_(v1.size(), 0) += v1 += v2;
-}
-
-// Вычитание векторов
-vector_ operator-=(vector_ v1, const vector_& v2) {
+    vector_ t = vector_(v1.size());
     for (int i = 0; i < v1.size(); i++) {
-        v1[i] -= v2[i];
+        t[i] = v1[i] + v2[i];
     }
-    return v1;
+    return t;
 }
 
 vector_ operator-(const vector_& v1, const vector_& v2) {
-    return vector_(v1.size(), 0) += v1 -= v2;
+    vector_ t = vector_(v1.size());
+    for (int i = 0; i < v1.size(); i++) {
+        t[i] = v1[i] - v2[i];
+    }
+    return t;
 }
 
 // Умножение вектора на матрицу (получается вектор-строка)
@@ -83,14 +69,6 @@ matrix_ operator*(const matrix_& m1, const matrix_& m2) {
         res[i] = m1[i] * m2;
     }
     return res;
-}
-
-// Умножение матрицы на число
-matrix_ operator*=(matrix_ m, double a) {
-    for (vector_ &v: m) {
-        v = v * a;
-    }
-    return m;
 }
 
 matrix_ operator*(matrix_ m, double a) {

@@ -13,7 +13,7 @@ int number_of_iterations;
 
 // Считаем квадратичную функцию в точке
 double f(const vector_& x) {
-    return scalar(x, (A * x) += B) + C;
+    return scalar(x, (A * x) + B) + C;
 }
 
 // Градиентный спуск
@@ -25,7 +25,7 @@ double gradient_descent(const vector_& x0, double eps) {
 
     while (true) {
         number_of_iterations++;
-        vector_ gradient = (A * x_cur) * 2 += B;
+        vector_ gradient = (A * x_cur) * 2 + B;
         if (module(gradient) < eps) {
             return f_x_cur;
         }
@@ -47,14 +47,13 @@ double gradient_descent(const vector_& x0, double eps) {
 double steepest_descent(const vector_& x0, double eps) {
     number_of_iterations = 0;
     vector_ x_cur = x0;
-    double f_x_cur = f(x_cur);
-    double alpha = L;
+    double alpha;
 
     while (true) {
         number_of_iterations++;
-        vector_ gradient = (A * x_cur) * 2 += B;
+        vector_ gradient = (A * x_cur) * 2 + B;
         if (module(gradient) < eps) {
-            return f_x_cur;
+            return f(x_cur);
         }
 
         // Одномерная оптимизация
@@ -65,12 +64,11 @@ double steepest_descent(const vector_& x0, double eps) {
         // выбрать любой способ:
 //        alpha = algo::dichotomy(f1, 0, DBL_MAX, eps);
 //        alpha = algo::golden_section(f1, 0, DBL_MAX, eps);
-        alpha = algo::fibonacci(f1, 0, 10000, eps);
+        alpha = algo::fibonacci(f1, 0, L, eps);
 //        alpha = algo::parabolic(f1, 0, DBL_MAX, eps);
 //        alpha = algo::brent(f1, 0, DBL_MAX, eps);
 
-        x_cur -= (gradient *= alpha);
-        f_x_cur = f(x_cur);
+        x_cur = x_cur - gradient * alpha;
     }
 }
 
@@ -78,7 +76,7 @@ double steepest_descent(const vector_& x0, double eps) {
 double conjugate_gradient(const vector_& x0, double eps) {
     number_of_iterations = 0;
     vector_ x_cur = x0;
-    vector_ gradient = (A * x_cur) * 2 += B;
+    vector_ gradient = (A * x_cur) * 2 + B;
     vector_ p_cur = vector_(n, 0) - gradient;
     double alpha;
 
@@ -92,12 +90,12 @@ double conjugate_gradient(const vector_& x0, double eps) {
         // выбрать любой способ:
 //        alpha = algo::dichotomy(f1, 0, DBL_MAX, eps);
 //        alpha = algo::golden_section(f1, 0, DBL_MAX, eps);
-        alpha = algo::fibonacci(f1, 0, 10000, eps);
+        alpha = algo::fibonacci(f1, 0, L, eps);
 //        alpha = algo::parabolic(f1, 0, DBL_MAX, eps);
 //        alpha = algo::brent(f1, 0, DBL_MAX, eps);
 
         vector_ x_new = x_cur + p_cur * alpha;
-        vector_ gradient_new = (A * x_new) * 2 += B;
+        vector_ gradient_new = (A * x_new) * 2 + B;
         if (module(gradient) < eps) {
             return f(x_new);
         }
@@ -165,7 +163,7 @@ int main() {
     std::cout << std::setprecision(5) << std::fixed;
 
     log("Градиентный спуск", eps, gradient_descent(vector_(n, 1), eps));
-//    log("Наискорейший спуск", eps, steepest_descent(vector_(n, 1), eps));
+    log("Наискорейший спуск", eps, steepest_descent(vector_(n, 1), eps));
     log("Сопряженный градиент", eps, conjugate_gradient(vector_(n, 1), eps));
 
 }
