@@ -76,6 +76,7 @@ double steepest_descent(const vector_& x0, double eps) {
 
 // Сопряженный градиент
 double conjugate_gradient(const vector_& x0, double eps) {
+    number_of_iterations = 0;
     vector_ x_cur = x0;
     vector_ gradient = (A * x_cur) * 2 += B;
     vector_ p_cur = vector_(n, 0) - gradient;
