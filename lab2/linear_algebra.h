@@ -86,9 +86,4 @@ double module(const vector_& v) {
     return sqrt(scalar(v, v));
 }
 
-// Дистанция между точками
-double euclidean_distance(const vector_& v1, const vector_& v2) {
-    return module(v1 - v2);
-}
-
 #endif //METOPT_LINEAR_ALGEBRA_H

@@ -9,6 +9,7 @@ matrix_ A;
 vector_ B;
 double C;
 int n;
+double max_alpha;
 double k;
 double eps;
 
@@ -31,7 +32,7 @@ void csv_out(std::ofstream &s, int nym, double f_x, const vector_& x, const vect
     s << "," << module(p) << ",";
     s << g;
     s << ",";
-    s << module(g) << "," << a << "," << eps << std::endl;
+    s << module(g) << "," << a << "," << k << "," << eps << std::endl;
 }
 
 // Считаем квадратичную функцию в точке
@@ -44,7 +45,7 @@ double gradient_descent(const vector_& x0) {
     number_of_iterations = 0;
     vector_ x_cur = x0;
     double f_x_cur = f(x_cur);
-    double alpha = k;
+    double alpha = max_alpha;
 
     while (true) {
         number_of_iterations++;
@@ -87,7 +88,7 @@ double steepest_descent(const vector_& x0) {
         // выбрать любой способ:
 //        alpha = algo::dichotomy(f1, 0, k, eps);
 //        alpha = algo::golden_section(f1, 0, k, eps);
-        alpha = algo::fibonacci(f1, 0, k, eps);
+        alpha = algo::fibonacci(f1, 0, max_alpha, eps);
 //        alpha = algo::parabolic(f1, 0, k, eps);
 //        alpha = algo::brent(f1, 0, k, eps);
 
@@ -113,7 +114,7 @@ double conjugate_gradient(const vector_& x0) {
         // выбрать любой способ:
 //        alpha = algo::dichotomy(f1, 0, k, eps);
 //        alpha = algo::golden_section(f1, 0, k, eps);
-        alpha = algo::fibonacci(f1, 0, k, eps);
+        alpha = algo::fibonacci(f1, 0, max_alpha, eps);
 //        alpha = algo::parabolic(f1, 0, k, eps);
 //        alpha = algo::brent(f1, 0, k, eps);
 
@@ -139,12 +140,12 @@ double gradient_descent_csv(const vector_& x0) {
     std::ofstream myfile;
     myfile.open("gradient_descent_n" + std::to_string(n) + "_k" + std::to_string(k) + ".csv");
     myfile << std::setprecision(4) << std::fixed;
-    myfile << "n,f(x),x,p,||p||,gradient,||gradient||,alpha,eps" << std::endl;
+    myfile << "n,f(x),x,p,||p||,gradient,||gradient||,alpha,k,eps" << std::endl;
 
     number_of_iterations = 0;
     vector_ x_cur = x0;
     double f_x_cur = f(x_cur);
-    double alpha = k;
+    double alpha = max_alpha;
 
     while (true) {
         number_of_iterations++;
@@ -176,7 +177,7 @@ double steepest_descent_csv(const vector_& x0) {
     std::ofstream myfile;
     myfile.open("steepest_descent_n" + std::to_string(n) + "_k" + std::to_string(k) + ".csv");
     myfile << std::setprecision(4) << std::fixed;
-    myfile << "n,f(x),x,p,||p||,gradient,||gradient||,alpha,eps" << std::endl;
+    myfile << "n,f(x),x,p,||p||,gradient,||gradient||,alpha,k,eps" << std::endl;
 
     number_of_iterations = 0;
     vector_ x_cur = x0;
@@ -198,7 +199,7 @@ double steepest_descent_csv(const vector_& x0) {
         // выбрать любой способ:
 //        alpha = algo::dichotomy(f1, 0, k, eps);
 //        alpha = algo::golden_section(f1, 0, k, eps);
-        alpha = algo::fibonacci(f1, 0, k, eps);
+        alpha = algo::fibonacci(f1, 0, max_alpha, eps);
 //        alpha = algo::parabolic(f1, 0, k, eps);
 //        alpha = algo::brent(f1, 0, k, eps);
 
@@ -214,7 +215,7 @@ double conjugate_gradient_csv(const vector_& x0) {
     std::ofstream myfile;
     myfile.open("conjugate_gradient_n" + std::to_string(n) + "_k" + std::to_string(k) + ".csv");
     myfile << std::setprecision(4) << std::fixed;
-    myfile << "n,f(x),x,p,||p||,gradient,||gradient||,alpha,eps" << std::endl;
+    myfile << "n,f(x),x,p,||p||,gradient,||gradient||,alpha,k,eps" << std::endl;
 
     number_of_iterations = 0;
     vector_ x_cur = x0;
@@ -236,7 +237,7 @@ double conjugate_gradient_csv(const vector_& x0) {
         // выбрать любой способ:
 //        alpha = algo::dichotomy(f1, 0, k, eps);
 //        alpha = algo::golden_section(f1, 0, k, eps);
-        alpha = algo::fibonacci(f1, 0, k, eps);
+        alpha = algo::fibonacci(f1, 0, max_alpha, eps);
 //        alpha = algo::parabolic(f1, 0, k, eps);
 //        alpha = algo::brent(f1, 0, k, eps);
 
@@ -277,7 +278,8 @@ void scanFunction() {
     }
     std::cout << "Enter number C" << std::endl;
     std::cin >> C;
-    k = 0.01;
+    k = 100;
+    max_alpha = 0.01;
 }
 
 // Инициализация вручную
@@ -287,11 +289,13 @@ void init() {
          {2, 2}};
     B = {2, -3};
     C = -3;
-    k = 0.01;
+    k = 100;
+    max_alpha = 0.01;
 }
 
+// get random int in range 1..k_
 int get_int(int k_) {
-    return (std::rand() % k_);
+    return (std::rand() % k_) + 1;
 }
 
 // create function with specified conditions
@@ -311,13 +315,13 @@ void generate_function(int n_, int k_) {
     if (n > 1) {
         A[n - 1][n - 1] = 1;
     }
-    k = 1.0 / k_;
+    k = k_;
+    max_alpha = 1.0 / k_;
 }
 
 void make_experiment() {
-    int n_ = 11; // шаг 1
-    vector_ x_0 = vector_(n, 0);
-    n_ = 101; // шаг 10
+    int n_ = 101; // шаг 10
+    vector_ x_0 = vector_(n_, 0);
     for (int k_ = 1; k_ <= n_; k_ += 10) {
         generate_function(n_, k_);
         gradient_descent_csv(x_0);
@@ -339,16 +343,16 @@ void log(const std::string& name, double res) {
 int main() {
     // Задание функции:
 //    scanFunction();
-    init();
+//    init();
 
     // Начальные параметры:
     eps = 0.0001;
 //    system("chcp 65001");
 
-//    make_experiment();
+    make_experiment();
 
-    vector_ x_0 = vector_(n, 0);
-    log("Градиентный спуск", gradient_descent(x_0));
-    log("Наискорейший спуск", steepest_descent(x_0));
-    log("Сопряженный градиент", conjugate_gradient(x_0));
+//    vector_ x_0 = vector_(n, 0);
+//    log("Градиентный спуск", gradient_descent(x_0));
+//    log("Наискорейший спуск", steepest_descent(x_0));
+//    log("Сопряженный градиент", conjugate_gradient(x_0));
 }
