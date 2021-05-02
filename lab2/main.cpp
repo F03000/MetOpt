@@ -10,7 +10,7 @@ vector_ B;
 double C;
 int n;
 double max_alpha;
-double k;
+int k;
 double eps;
 
 int number_of_iterations;
@@ -48,11 +48,11 @@ double gradient_descent(const vector_& x0) {
     double alpha = max_alpha;
 
     while (true) {
-        number_of_iterations++;
         vector_ gradient = (A * x_cur) * 2 + B;
         if (module(gradient) < eps) {
             return f_x_cur;
         }
+        number_of_iterations++;
 
         vector_ x_new = x_cur - (gradient * alpha);
         double f_x_new = f(x_new);
@@ -74,11 +74,11 @@ double steepest_descent(const vector_& x0) {
     double alpha;
 
     while (true) {
-        number_of_iterations++;
         vector_ gradient = (A * x_cur) * 2 + B;
         if (module(gradient) < eps) {
             return f(x_cur);
         }
+        number_of_iterations++;
 
         // Одномерная оптимизация
         auto f1 = [&](double x) {
@@ -105,11 +105,11 @@ double conjugate_gradient(const vector_& x0) {
     double alpha;
 
     while (true) {
-        number_of_iterations++;
         // Одномерная оптимизация
         auto f1 = [&](double x) {
             return f(x_cur - gradient * x);
         };
+        number_of_iterations++;
 
         // выбрать любой способ:
 //        alpha = algo::dichotomy(f1, 0, k, eps);
@@ -148,12 +148,12 @@ double gradient_descent_csv(const vector_& x0) {
     double alpha = max_alpha;
 
     while (true) {
-        number_of_iterations++;
         vector_ gradient = (A * x_cur) * 2 + B;
         if (module(gradient) < eps) {
             myfile.close();
             return f_x_cur;
         }
+        number_of_iterations++;
 
         vector_ x_new = x_cur - (gradient * alpha);
         double f_x_new = f(x_new);
@@ -184,13 +184,12 @@ double steepest_descent_csv(const vector_& x0) {
     double alpha;
 
     while (true) {
-        number_of_iterations++;
         vector_ gradient = (A * x_cur) * 2 + B;
         if (module(gradient) < eps) {
             myfile.close();
             return f(x_cur);
         }
-
+        number_of_iterations++;
         // Одномерная оптимизация
         auto f1 = [&](double x) {
             return f(x_cur - gradient * x);
@@ -224,11 +223,11 @@ double conjugate_gradient_csv(const vector_& x0) {
     double alpha;
 
     while (true) {
-        number_of_iterations++;
         if (module(gradient) < eps) {
             myfile.close();
             return f(x_cur);
         }
+        number_of_iterations++;
         // Одномерная оптимизация
         auto f1 = [&](double x) {
             return f(x_cur - gradient * x);
@@ -283,14 +282,25 @@ void scanFunction() {
 }
 
 // Инициализация вручную
-void init() {
+void bad_init() {
     n = 2;
-    A = {{3, 2},
-         {2, 2}};
-    B = {2, -3};
-    C = -3;
-    k = 100;
-    max_alpha = 0.01;
+    A = {{64, 126},
+         {126, 64}};
+    B = {-10, 30};
+    C = 13;
+    k = 127;
+    max_alpha = 1.0 / 127;
+}
+
+
+void good_init() {
+    n = 2;
+    A = {{1, 0},
+         {0, 1}};
+    B = {5, -5};
+    C = 10;
+    k = 1;
+    max_alpha = 2;
 }
 
 // get random int in range 1..k_
@@ -316,22 +326,30 @@ void generate_function(int n_, int k_) {
         A[n - 1][n - 1] = 1;
     }
     k = k_;
-    max_alpha = 1.0 / k_;
+    max_alpha = 2.0 / k_;
 }
 
 void make_experiment() {
-    int n_ = 101; // шаг 10
-    vector_ x_0 = vector_(n_, 0);
-    for (int k_ = 1; k_ <= n_; k_ += 10) {
-        generate_function(n_, k_);
-        gradient_descent_csv(x_0);
-        steepest_descent_csv(x_0);
-        conjugate_gradient_csv(x_0);
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    std::vector<int> nn = {10, 100, 1000, 10000};
+    std::vector<int> kk = {1, 50, 100, 250, 500};
+
+    for (int i : nn) {
+        vector_ x_0 = vector_(i, 0);
+        for (int j : kk) {
+            generate_function(i, j);
+            gradient_descent_csv(x_0);
+            steepest_descent_csv(x_0);
+            conjugate_gradient_csv(x_0);
+        }
     }
 }
 
 // Логгер
 void log(const std::string& name, double res) {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
     std::cout << std::setprecision(4) << std::fixed;
     std::cout << "Method used:          " << name << std::endl;
     std::cout << "Absolute error        " << eps << std::endl;
@@ -343,16 +361,17 @@ void log(const std::string& name, double res) {
 int main() {
     // Задание функции:
 //    scanFunction();
-//    init();
+    good_init();
+//    bad_init();
 
     // Начальные параметры:
     eps = 0.0001;
 //    system("chcp 65001");
 
-    make_experiment();
+//    make_experiment();
 
-//    vector_ x_0 = vector_(n, 0);
-//    log("Градиентный спуск", gradient_descent(x_0));
-//    log("Наискорейший спуск", steepest_descent(x_0));
-//    log("Сопряженный градиент", conjugate_gradient(x_0));
+    vector_ x_0 = vector_(n, 0);
+    log("Градиентный спуск", gradient_descent_csv(x_0));
+    log("Наискорейший спуск", steepest_descent_csv(x_0));
+    log("Сопряженный градиент", conjugate_gradient_csv(x_0));
 }
