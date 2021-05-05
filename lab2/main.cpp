@@ -284,8 +284,8 @@ void scanFunction() {
 // Инициализация вручную
 void bad_init() {
     n = 2;
-    A = {{64, 126},
-         {126, 64}};
+    A = {{64, 63},
+         {63, 64}};
     B = {-10, 30};
     C = 13;
     k = 127;
@@ -330,19 +330,23 @@ void generate_function(int n_, int k_) {
 }
 
 void make_experiment() {
-    std::ios_base::sync_with_stdio(false);
-    std::cin.tie(nullptr);
-    std::vector<int> nn = {10, 100, 1000, 10000};
+    std::ofstream table;
+    table.open("nk_table.tsv");
+    table << std::setprecision(4) << std::fixed;
+
+    std::vector<int> nn = {10, 100};
     std::vector<int> kk = {1, 50, 100, 250, 500};
 
+    table << "N\\K\t1\t50\t100\t250\t500" << std::endl;
     for (int i : nn) {
+        table << i;
         vector_ x_0 = vector_(i, 0);
         for (int j : kk) {
             generate_function(i, j);
-            gradient_descent_csv(x_0);
-            steepest_descent_csv(x_0);
-            conjugate_gradient_csv(x_0);
+            conjugate_gradient(x_0);
+            table << "\t" << number_of_iterations;
         }
+        table << std::endl;
     }
 }
 
@@ -361,8 +365,8 @@ void log(const std::string& name, double res) {
 int main() {
     // Задание функции:
 //    scanFunction();
-    good_init();
-//    bad_init();
+//    good_init();
+    bad_init();
 
     // Начальные параметры:
     eps = 0.0001;
