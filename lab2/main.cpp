@@ -334,10 +334,14 @@ void make_experiment() {
     table.open("nk_table.tsv");
     table << std::setprecision(4) << std::fixed;
 
-    std::vector<int> nn = {10, 100};
-    std::vector<int> kk = {1, 50, 100, 250, 500};
+    std::vector<int> nn = {10};
+    std::vector<int> kk = {1, 50, 100, 250};
 
-    table << "N\\K\t1\t50\t100\t250\t500" << std::endl;
+    table << "N\\K";
+    for (int k_ : kk) {
+        table << "\t" << k_;
+    }
+    table << std::endl;
     for (int i : nn) {
         table << i;
         vector_ x_0 = vector_(i, 0);
@@ -366,16 +370,16 @@ int main() {
     // Задание функции:
 //    scanFunction();
 //    good_init();
-    bad_init();
+//    bad_init();
 
     // Начальные параметры:
     eps = 0.0001;
 //    system("chcp 65001");
 
-//    make_experiment();
+    make_experiment();
 
-    vector_ x_0 = vector_(n, 0);
-    log("Градиентный спуск", gradient_descent_csv(x_0));
-    log("Наискорейший спуск", steepest_descent_csv(x_0));
-    log("Сопряженный градиент", conjugate_gradient_csv(x_0));
+//    vector_ x_0 = vector_(n, 0);
+//    log("Градиентный спуск", gradient_descent_csv(x_0));
+//    log("Наискорейший спуск", steepest_descent_csv(x_0));
+//    log("Сопряженный градиент", conjugate_gradient_csv(x_0));
 }
