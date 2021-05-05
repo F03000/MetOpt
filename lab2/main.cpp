@@ -150,6 +150,8 @@ double gradient_descent_csv(const vector_& x0) {
     while (true) {
         vector_ gradient = (A * x_cur) * 2 + B;
         if (module(gradient) < eps) {
+            vector_ p_cur = vector_ (n, 0) - gradient * alpha;
+            csv_out(myfile, number_of_iterations, f(x_cur), x_cur, p_cur, gradient, alpha);
             myfile.close();
             return f_x_cur;
         }
@@ -186,6 +188,8 @@ double steepest_descent_csv(const vector_& x0) {
     while (true) {
         vector_ gradient = (A * x_cur) * 2 + B;
         if (module(gradient) < eps) {
+            vector_ p_cur = vector_ (n, 0) - gradient * alpha;
+            csv_out(myfile, number_of_iterations, f(x_cur), x_cur, p_cur, gradient, alpha);
             myfile.close();
             return f(x_cur);
         }
@@ -224,6 +228,7 @@ double conjugate_gradient_csv(const vector_& x0) {
 
     while (true) {
         if (module(gradient) < eps) {
+            csv_out(myfile, number_of_iterations, f(x_cur), x_cur, p_cur, gradient, alpha);
             myfile.close();
             return f(x_cur);
         }
