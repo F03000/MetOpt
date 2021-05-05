@@ -103,24 +103,29 @@ double conjugate_gradient(const vector_& x0) {
     vector_ gradient = (A * x_cur) * 2 + B;
     vector_ p_cur = vector_(n, 0) - gradient;
     double alpha;
+    bool beginning = true;
 
     while (true) {
         // Одномерная оптимизация
         auto f1 = [&](double x) {
-            return f(x_cur - gradient * x);
+            return f(x_cur + p_cur * x);
         };
         number_of_iterations++;
 
         // выбрать любой способ:
 //        alpha = algo::dichotomy(f1, 0, k, eps);
 //        alpha = algo::golden_section(f1, 0, k, eps);
-        alpha = algo::fibonacci(f1, 0, max_alpha, eps);
+        if (beginning) {
+            alpha = -((scalar(gradient, p_cur)) / (scalar(A * p_cur, p_cur))) / 2;
+        } else {
+            alpha = algo::fibonacci(f1, 0, max_alpha, eps);
+        }
 //        alpha = algo::parabolic(f1, 0, k, eps);
 //        alpha = algo::brent(f1, 0, k, eps);
 
         vector_ x_new = x_cur + p_cur * alpha;
         vector_ gradient_new = (A * x_new) * 2 + B;
-        if (module(gradient) < eps) {
+        if (module(gradient_new) < eps) {
             return f(x_new);
         }
         double beta;
@@ -225,6 +230,7 @@ double conjugate_gradient_csv(const vector_& x0) {
     vector_ gradient = (A * x_cur) * 2 + B;
     vector_ p_cur = vector_(n, 0) - gradient;
     double alpha;
+    bool beginning = true;
 
     while (true) {
         if (module(gradient) < eps) {
@@ -235,13 +241,17 @@ double conjugate_gradient_csv(const vector_& x0) {
         number_of_iterations++;
         // Одномерная оптимизация
         auto f1 = [&](double x) {
-            return f(x_cur - gradient * x);
+            return f(x_cur + p_cur * x);
         };
 
         // выбрать любой способ:
 //        alpha = algo::dichotomy(f1, 0, k, eps);
 //        alpha = algo::golden_section(f1, 0, k, eps);
-        alpha = algo::fibonacci(f1, 0, max_alpha, eps);
+        if (beginning) {
+            alpha = -((scalar(gradient, p_cur)) / (scalar(A * p_cur, p_cur))) / 2;
+        } else {
+            alpha = algo::fibonacci(f1, 0, max_alpha, eps);
+        }
 //        alpha = algo::parabolic(f1, 0, k, eps);
 //        alpha = algo::brent(f1, 0, k, eps);
 
