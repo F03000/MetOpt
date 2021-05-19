@@ -63,7 +63,52 @@ std::vector<double> lu_solving(matrix_ &A, vector_ &b) {
 std::vector<double> gauss(matrix_ &A, vector_ &b) {
     int n = (int)A.size();
     // TODO: матрицу обрабатывать на месте, желательно умно менять строчки местами (менять ссылки???)
+
+    // прямой ход
     for (int i = 0; i < n - 1; ++i) {
-        
+        // выбор опорного элемента
+        double m = std::abs(A[i][i]);
+        int ind = i;
+        for (int j = i + 1; j < n; ++j) {
+            if (std::abs(A[j][i]) > m) {
+                m = std::abs(A[j][i]);
+                ind = j;
+            }
+        }
+        if (m < 10e-7) {
+            return vector_(n, 0);
+        }
+        std::swap(A[i], A[ind]);
+        std::swap(b[i], b[ind]);
+
+        // уменьшаем все строчки
+        for (int j = i + 1; j < n; ++j) {
+            double q = A[j][i] / A[i][i];
+            A[j][i] = 0;
+            for (int k = i + 1; k < n; ++k) {
+                A[j][k] -= q * A[i][k];
+            }
+            b[j] -= q * b[i];
+        }
     }
+
+    // обратный ход
+    for (int i = n - 1; i > 0; --i) {
+        // уменьшаем все строчки
+        for (int j = i - 1; j >= 0; --j) {
+            double q = A[j][i] / A[i][i];
+            A[j][i] = 0;
+            for (int k = i + 1; k < n; ++k) {
+                A[j][k] -= q * A[i][k];
+            }
+            b[j] -= q * b[i];
+        }
+    }
+
+    vector_ x = vector_(n);
+    for (int i = 0; i < n; ++i) {
+        x[i] = b[i] / A[i][i];
+    }
+
+    return x;
 }
