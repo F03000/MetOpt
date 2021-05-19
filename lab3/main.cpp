@@ -4,6 +4,7 @@
 
 // здесь должен быть логгер, ввод-вывод данных и запуск методов
 
+/// Ввод из файла: размерность n, матрица A, вектор b
 void input(const std::string &filename, matrix_ &A, vector_ &b) {
     std::ifstream is;
     is.open(filename);
@@ -39,7 +40,9 @@ void log(std::ofstream& os, int n, int k, double abs_e, double rel_e) {
 int main() {
     matrix_ A;
     vector_ b;
-    input("input.txt", A, b);
+    input("test1.txt", A, b);
+
+
 
     std::ofstream os = logger_start("output.csv", "n,k,abs,rel");
     log(os, 1, 1, 0.1, 0.1);
