@@ -62,7 +62,6 @@ std::vector<double> lu_solving(matrix_ &A, vector_ &b) {
  * */
 std::vector<double> gauss(matrix_ &A, vector_ &b) {
     int n = (int)A.size();
-    // TODO: матрицу обрабатывать на месте, желательно умно менять строчки местами (менять ссылки???)
 
     // прямой ход
     for (int i = 0; i < n - 1; ++i) {
