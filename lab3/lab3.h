@@ -16,7 +16,7 @@ private:
     std::vector<double> al;
     std::vector<double> au;
 public:
-    // everything is copied by link
+    /// Передача массивов по ссылке
     explicit profile_matrix(vector_ &d, std::vector<int> &ia, vector_ &al, vector_ &au) {
         this->d = d;
         this->ia = ia;
