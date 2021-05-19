@@ -48,6 +48,7 @@ int main() {
     matrix_ A;
     vector_ b;
 
+    // TODO: написать больше тестов
     for (int i = 0; i < 1; ++i) {
         std::string root = "/home/rytuo/work/metOpt/MetOpt/lab3/";
         std::string input_filename = root + "tests/test" + std::to_string(i) + ".txt";
@@ -57,6 +58,8 @@ int main() {
             continue;
         }
 
+        // TODO: Передавать логгер функцию в методы
+        // TODO: Тщательно задебажить функции
 //        vector_ x = lu_solving(A, b);
         vector_ x = gauss(A, b);
 
