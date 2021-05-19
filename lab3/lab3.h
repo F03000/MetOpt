@@ -9,6 +9,7 @@
 typedef std::vector<double> vector_;
 typedef std::vector<std::vector<double>> matrix_;
 
+/*
 class profile_matrix {
 private:
     std::vector<double> d;
@@ -24,5 +25,6 @@ public:
         this->au = al;
     }
 };
+*/
 
 #endif //METOPT_LAB3_H
