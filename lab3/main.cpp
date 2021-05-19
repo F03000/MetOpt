@@ -1,13 +1,19 @@
 #include <fstream>
+#include <iostream>
 #include <iomanip>
 #include "lab3.cpp"
 
 // здесь должен быть логгер, ввод-вывод данных и запуск методов
 
 /// Ввод из файла: размерность n, матрица A, вектор b
-void input(const std::string &filename, matrix_ &A, vector_ &b) {
-    std::ifstream is;
-    is.open(filename);
+int input(const std::string &filename, matrix_ &A, vector_ &b) {
+    std::ifstream is(filename);
+    if (!is) {
+        std::cerr << "Could not open file: " + filename << std::endl;
+        return 0;
+    } else {
+        std::cout << "New test: " + filename << std::endl;
+    }
     int n;
     is >> n;
     A = matrix_(n, vector_(n));
@@ -21,6 +27,7 @@ void input(const std::string &filename, matrix_ &A, vector_ &b) {
         is >> b[i];
     }
     is.close();
+    return 1;
 }
 
 /// Инициализация логгера в выбранный файл
@@ -40,11 +47,24 @@ void log(std::ofstream& os, int n, int k, double abs_e, double rel_e) {
 int main() {
     matrix_ A;
     vector_ b;
-    input("test1.txt", A, b);
 
+    for (int i = 0; i < 1; ++i) {
+        std::string root = "/home/rytuo/work/metOpt/MetOpt/lab3/";
+        std::string input_filename = root + "tests/test" + std::to_string(i) + ".txt";
+        std::string output_filename = root + "output/test" + std::to_string(i) + ".csv";
 
+        if (!input(input_filename, A, b)) {
+            continue;
+        }
 
-    std::ofstream os = logger_start("output.csv", "n,k,abs,rel");
-    log(os, 1, 1, 0.1, 0.1);
-    os.close()
+//        vector_ x = lu_solving(A, b);
+        vector_ x = gauss(A, b);
+
+        std::ofstream os;
+        os.open(output_filename);
+        for (double j : x) {
+            os << j << " ";
+        }
+        os.close();
+    }
 }
