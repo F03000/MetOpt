@@ -5,6 +5,9 @@
 #include <utility>
 #include <vector>
 
+typedef std::vector<double> vector_;
+typedef std::vector<std::vector<double>> matrix_;
+
 class profile_matrix {
 private:
     std::vector<double> d;
@@ -12,15 +15,12 @@ private:
     std::vector<double> al;
     std::vector<double> au;
 public:
-
-};
-
-class default_matrix {
-private:
-    std::vector<std::vector<double>> m;
-public:
-    explicit default_matrix(std::vector<std::vector<double>> m) {
-        this->m = std::move(m);
+    // everything is copied by link
+    explicit profile_matrix(vector_ &d, std::vector<int> &ia, vector_ &al, vector_ &au) {
+        this->d = d;
+        this->ia = ia;
+        this->al = al;
+        this->au = al;
     }
 };
 
