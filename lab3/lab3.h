@@ -2,6 +2,7 @@
 #define METOPT_LAB3_H
 
 // здесь должны быть инклуды, дефайны и вспомогательные структуры для методов
+
 #include <utility>
 #include <vector>
 

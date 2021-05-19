@@ -8,7 +8,7 @@
  * На выходе вектор x - одно из решений слау (если есть)
  * */
 std::vector<double> lu_solving(profile_matrix &m, vector_ &b) {
-
+    // TODO
 }
 
 /**
@@ -17,5 +17,5 @@ std::vector<double> lu_solving(profile_matrix &m, vector_ &b) {
  * На выходе вектор x - одно из решений слау (если есть)
  * */
 std::vector<double> gauss(matrix_ &m, vector_ &b) {
-
+    // TODO
 }

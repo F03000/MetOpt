@@ -4,7 +4,7 @@
 
 // здесь должен быть логгер, ввод-вывод данных и запуск методов
 
-
+// TODO: считывание матричек из файла
 
 // init csv file logger
 std::ofstream logger_start(const std::string& filename, const std::string& name) {
