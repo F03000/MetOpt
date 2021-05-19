@@ -7,7 +7,7 @@
  * На вход подается матрица профильного формата
  * На выходе вектор x - одно из решений слау (если есть)
  * */
-std::vector<double> lu_solving(profile_matrix m) {
+std::vector<double> lu_solving(profile_matrix &m, vector_ &b) {
 
 }
 
@@ -16,6 +16,6 @@ std::vector<double> lu_solving(profile_matrix m) {
  * На вход подается матрица плотного формата
  * На выходе вектор x - одно из решений слау (если есть)
  * */
-std::vector<double> gauss(matrix_ m) {
+std::vector<double> gauss(matrix_ &m, vector_ &b) {
 
 }
