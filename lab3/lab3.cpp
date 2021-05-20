@@ -8,52 +8,35 @@
  * На вход подается квадратная матрица ?профильного? формата
  * На выходе вектор x - одно из решений слау (если есть)
  * */
-std::vector<double> lu_solving(matrix_ &A, vector_ &b) {
-    int n = (int)A.size();
-
-    // LU-разложение матрицы A
-    // TODO: хранить новые матрицы на месте предыдущей
-    matrix_ L = matrix_(n, vector_(n, 0));
-    matrix_ U = matrix_(n, vector_(n, 0));
-    L[0][0] = A[0][0];
-    U[0][0] = 1;
-    for (int i = 1; i < n; ++i) {
-        for (int j = 0; j < i; ++j) {
-            L[i][j] = A[i][j];
-            U[j][i] = A[j][i];
-            for (int k = 0; k < j; ++k) {
-                L[i][j] -= L[i][k] * U[k][j];
-                U[j][i] -= L[j][k] * U[k][i];
+std::vector<double> lu_solving(matrix_ *A, vector_ &b) {
+    int n = (*A).size();
+    for (int j = 0; j < n; j++) {
+        for (int i = j + 1; i < n; i++) {
+            (*A)[i][j] = (*A)[i][j] / (*A)[j][j];
+            for (int k = j + 1; k < n; k++) {
+                (*A)[i][k] -= (*A)[i][j] * (*A)[j][k];
             }
-            U[j][i] /= L[j][j];
-        }
-
-        L[i][i] = A[i][i];
-        for (int k = 0; k < i; ++k) {
-            L[i][i] -= L[i][k] * U[k][i];
-        }
-
-        U[i][i] = 1;
-    }
-
-    // решить Ly = b прямым ходом
-    for (int i = 0; i < n - 1; ++i) {
-        for (int j = i + 1; j < n; ++j) {
-            b[j] -= b[i] * L[j][i] / L[i][i];
         }
     }
     vector_ y = vector_(n);
-    for (int i = 0; i < n; ++i) {
-        y[i] = b[i] / L[i][i];
-    }
-
-    // решить Ux = y обратным ходом
-    for (int i = n - 1; i > 0; --i) {
-        for (int j = i - 1; j >= 0; --j) {
-            y[j] -= y[i] * U[j][i];
+    // решить Ly = b прямым ходом
+    for (int i = 0; i < n; i++) {
+        y[i] = b[i];
+        for (int j = 0; j < i; j++) {
+            y[i] -= (*A)[i][j] * y[j];
         }
     }
-    return y;
+
+    vector_ x = vector_(n);
+    // решить Ux = y обратным ходом
+    for (int i = n - 1; i >= 0; i--) {
+        x[i] = y[i];
+        for (int j = i + 1; j < n; j++) {
+            x[i] -= (*A)[i][j] * x[j];
+        }
+        x[i] /= (*A)[i][i];
+    }
+    return x;
 }
 
 /**
