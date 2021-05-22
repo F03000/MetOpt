@@ -1,5 +1,5 @@
-#ifndef METOPT_LAB3_H
-#define METOPT_LAB3_H
+#ifndef METOPT_MATRIX_H
+#define METOPT_MATRIX_H
 
 // здесь должны быть генераторы и структуры для методов
 
@@ -43,8 +43,8 @@ public:
     }
 
     // генерируем матрицу как в задании
-    explicit profile_matrix(int k) {
-        n = 100;
+    explicit profile_matrix(int n, int k) {
+        this->n = n;
 
         srand(time(nullptr));
         std::vector<int> default_values = {0, -1, -2, -3, -4};
@@ -135,16 +135,27 @@ public:
     }
 };
 
-
-matrix_ guilbert_generator(int k) {
-    matrix_ m = matrix_(k, vector_(k));
-    for (int i = 0; i < k; ++i) {
-        for (int j = 0; j < k; ++j) {
+/// Генератор Гильбертовых матриц
+matrix_ guilbert_generator(int n) {
+    matrix_ m = matrix_(n, vector_(n));
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
             m[i][j] = 1.0 / (i + j + 1);
         }
     }
     return m;
 }
 
+/// Генератор плотных матриц
+matrix_ dense_generator(int n) {
+    matrix_ m = matrix_(n, vector_(n));
+    std::srand(time(nullptr));
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            m[i][j] = std::rand();
+        }
+    }
+    return m;
+}
 
-#endif //METOPT_LAB3_H
+#endif //METOPT_MATRIX_H
