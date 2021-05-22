@@ -42,6 +42,44 @@ public:
         iu.push_back((int)au.size());
     }
 
+    // генерируем матрицу как в задании
+    explicit profile_matrix(int k) {
+        n = 100;
+
+        srand(time(nullptr));
+        std::vector<int> default_values = {0, -1, -2, -3, -4};
+
+
+        d.resize(n);
+        al = vector_();
+        au = vector_();
+        il.resize(n + 1, 0);
+        iu.resize(n + 1, 0);
+
+        int sum = 0;
+        for (int i = 1; i < n; i++) {
+            int size = std::rand() % i + 1;
+            il[i] = il[i - 1] + size;
+            for (int j = 0; j < size; ++j) {
+                int nv = default_values[std::rand() % 5];
+                al.push_back(nv);
+                sum += nv;
+            }
+
+            size = std::rand() % i + 1;
+            iu[i] = iu[i - 1] + size;
+            for (int j = 0; j < size; ++j) {
+                int nv = default_values[std::rand() % 5];
+                au.push_back(nv);
+                sum += nv;
+            }
+        }
+        d[0] = -sum + pow(10, -k);
+        for (int i = 1; i < n; i++) {
+            d[i] = -sum;
+        }
+    }
+
     int size() const {
         return n;
     }
