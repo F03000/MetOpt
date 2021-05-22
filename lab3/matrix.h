@@ -158,4 +158,14 @@ matrix_ dense_generator(int n) {
     return m;
 }
 
+/// Генератор вектора свободных коэффициентов
+vector_ free_generator(int n) {
+    vector_ b = vector_(n);
+    std::srand(time(nullptr));
+    for (int i = 0; i < n; ++i) {
+        b[i] = std::rand();
+    }
+    return b;
+}
+
 #endif //METOPT_MATRIX_H

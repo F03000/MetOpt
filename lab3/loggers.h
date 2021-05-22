@@ -7,9 +7,11 @@
 #include <iostream>
 #include <iomanip>
 
+std::string ROOT = "/home/rytuo/work/metOpt/MetOpt/lab3/";
+
 /// Ввод из файла: размерность n, матрица A, вектор b
 int input(const std::string &filename, matrix_ &A, vector_ &b) {
-    std::ifstream is(filename);
+    std::ifstream is(ROOT + "test/" + filename);
     if (!is) {
         std::cerr << "Could not open file: " + filename << std::endl;
         return 0;
@@ -35,15 +37,24 @@ int input(const std::string &filename, matrix_ &A, vector_ &b) {
 /// Инициализация логгера в выбранный файл
 std::ofstream logger_start(const std::string &filename, const std::string &name) {
     std::ofstream os;
-    os.open(filename);
+    os.open(ROOT + "output/" + filename);
     os << std::setprecision(4) << std::fixed;
     os << name;
     return os;
 }
 
 /// Логирующая функция
-void log(std::ofstream& os, int n, int k, double abs_e, double rel_e) {
+void log(std::ofstream &os, int n, int k, double abs_e, double rel_e) {
     os << n << "," << k << "," << abs_e << "," << rel_e << std::endl;
+}
+
+/// Логирующая функция для метода Гаусса
+void gauss_log(std::ofstream &os, int n, const vector_ &x, const vector_ &b, const matrix_ &m) {
+    os << n << ",[";
+    for (double i : x) {
+        os << i << " ";
+    }
+    os << "]" << std::endl;
 }
 
 #endif //METOPT_LOGGERS_H

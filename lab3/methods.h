@@ -10,7 +10,7 @@
  * На вход подается квадратная матрица ?профильного? формата
  * На выходе вектор x - одно из решений слау (если есть)
  * */
-std::vector<double> lu_solving(profile_matrix &A, vector_ &b) {
+std::vector<double> lu_solver(profile_matrix &A, vector_ &b) {
     int n = A.size();
     for (int j = 0; j < n; j++) {
         for (int i = j + 1; i < n; i++) {
