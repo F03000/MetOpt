@@ -2,19 +2,18 @@
 
 // здесь должен быть код методов и различные эксперименты
 
-// TODO: прикрутить к этому методу профильные матрицы
 /**
  * Алгоритм решения слау на основе LU-разложения
  * На вход подается квадратная матрица ?профильного? формата
  * На выходе вектор x - одно из решений слау (если есть)
  * */
-std::vector<double> lu_solving(matrix_ *A, vector_ &b) {
-    int n = (*A).size();
+std::vector<double> lu_solving(profile_matrix &A, vector_ &b) {
+    int n = A.size();
     for (int j = 0; j < n; j++) {
         for (int i = j + 1; i < n; i++) {
-            (*A)[i][j] = (*A)[i][j] / (*A)[j][j];
+            A.set(i, j, A.get(i, j) / A.get(j, j));
             for (int k = j + 1; k < n; k++) {
-                (*A)[i][k] -= (*A)[i][j] * (*A)[j][k];
+                A.set(i, k, A.get(i, k) - A.get(i, j) * A.get(j, k));
             }
         }
     }
@@ -23,7 +22,7 @@ std::vector<double> lu_solving(matrix_ *A, vector_ &b) {
     for (int i = 0; i < n; i++) {
         y[i] = b[i];
         for (int j = 0; j < i; j++) {
-            y[i] -= (*A)[i][j] * y[j];
+            y[i] -= A.get(i, j) * y[j];
         }
     }
 
@@ -32,9 +31,9 @@ std::vector<double> lu_solving(matrix_ *A, vector_ &b) {
     for (int i = n - 1; i >= 0; i--) {
         x[i] = y[i];
         for (int j = i + 1; j < n; j++) {
-            x[i] -= (*A)[i][j] * x[j];
+            x[i] -= A.get(i, j) * x[j];
         }
-        x[i] /= (*A)[i][i];
+        x[i] /= A.get(i, i);
     }
     return x;
 }

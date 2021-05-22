@@ -13,84 +13,86 @@ typedef std::vector<double> vector_;
 typedef std::vector<std::vector<double>> matrix_;
 
 class profile_matrix {
-    std::vector<double> di;
-    std::vector<int> ia;
-    std::vector<double> al;
-    std::vector<double> au;
-
-    int default_dimension = 20;
-    std::vector<int> numbers_set = {0, -1, -2, -3, -4};
+private:
+    int n;
+    vector_ d, al, au;
+    std::vector<int> il, iu;
 
 public:
-    profile_matrix() {
-        // своя матрица
-        default_dimension = 3;
-        di = {0, 2, 4};
-        ia = {0, 0, 1, 2};
-        al = {1, 3};
-        au = {1, 5};
-    }
+    explicit profile_matrix(matrix_ &m) {
+        n = (int)m.size();
 
-    explicit profile_matrix(int k) {
-        // генерируем матрицу как в задании
-        srand(time(nullptr));
-        size_t size = (default_dimension * default_dimension + 1) / 2;
-        al.resize(size);
-        au.resize(size);
-        di.resize(default_dimension);
-        ia.resize(default_dimension + 1);
-        double sum = 0;
-        for (size_t i = 0; i < size; i++) {
-            int rand = std::rand();
-            al[i] = numbers_set[rand % 5];
-            sum -= al[i];
-            rand /= 5;
-            au[i] = numbers_set[rand % 5];
-            sum -= au[i];
-        }
-        ia[0] = 0;
-        for (int i = 0; i < default_dimension; i++) {
-            ia[i + 1] = ia[i] + i;
-            if (i == 0) {
-                di[i] = sum + pow(10, -k);
-            } else {
-                di[i] = sum;
-            }
-        }
-    }
+        d = vector_ ();
+        al = vector_();
+        au = vector_();
+        il = std::vector<int>();
+        iu = std::vector<int>();
+        for (int i = 0, j; i < n; ++i) {
+            d.push_back(m[i][i]);
 
-    std::vector<double> get_vector() {
-        // получаем вектор f_k, как в задании
-        std::vector<double> out(default_dimension);
-        for (int ix = 0; ix < default_dimension; ix++)
-        {
-            out[ix] = 0;
-            for (int jx = 0; jx < default_dimension; jx++)
-                out[ix] += get(ix, jx) * (jx + 1);
+            il.push_back((int)al.size());
+            for (j = 0; j < i && m[i][j] == 0; ++j);
+            for (; j < i; ++j) { al.push_back(m[i][j]); }
+
+            iu.push_back((int)au.size());
+            for (j = 0; j < i && m[j][i] == 0; ++j);
+            for (; j < i; ++j) { au.push_back(m[j][i]); }
         }
-        return out;
+        il.push_back((int)al.size());
+        iu.push_back((int)au.size());
     }
 
     int size() const {
-        // размер
-        return default_dimension;
+        return n;
     }
 
+    /// получаем элемент матрицы по индексу
     double get(int i, int j) {
-        // получаем элемент матрицы по ее индексам
         if (i == j) {
-            return di[i];
-        }
-        bool swapped = false;
-        if (i < j) {
-            std::swap(i, j);
-            swapped = true;
-        }
-        int first = i - (ia[i + 1] - ia[i]);
-        if (j < first) {
-            return 0;
+            return d[i];
+        } else if (i > j) {
+            // номер относительно начала массива
+            int k = j - i + il[i + 1] - il[i];
+            return k < 0 ? 0 : al[k];
         } else {
-            return swapped ? au[ia[i] + j - first] : al[ia[i] + j - first];
+            // номер относительно начала массива
+            int k = i - j + iu[j + 1] - iu[j];
+            return k < 0 ? 0 : au[k];
+        }
+    }
+
+    /// меняем элемент по индексу
+    void set(int i, int j, double v) {
+        if (i == j) {
+            d[i] = v;
+        } else if (i > j) {
+            // номер относительно начала массива
+            int k = j - i + il[i + 1] - il[i];
+            if (k < 0) {
+                for (int l = 0; l < -k - 1; ++l) {
+                    al.insert(al.begin() + il[i], 0);
+                }
+                al.insert(al.begin() + il[i], v);
+                for (int l = i + 1; l < il.size(); ++l) {
+                    il[l] -= k;
+                }
+            } else {
+                al[k] = v;
+            }
+        } else {
+            // номер относительно начала массива
+            int k = i - j + iu[j + 1] - iu[j];
+            if (k < 0) {
+                for (int l = 0; l < -k - 1; ++l) {
+                    au.insert(au.begin() + iu[j], 0);
+                }
+                au.insert(au.begin() + iu[j], v);
+                for (int l = j + 1; l < iu.size(); ++l) {
+                    iu[l] -= k;
+                }
+            } else {
+                au[k] = v;
+            }
         }
     }
 };

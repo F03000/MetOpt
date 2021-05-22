@@ -61,8 +61,11 @@ int main() {
         // TODO: не всегда существует решение
         // TODO: Передавать логгер функцию в методы
         // TODO: Тщательно задебажить функции
-//        vector_ x = lu_solving(A, b);
-        vector_ x = gauss(A, b);
+
+        profile_matrix P = profile_matrix(A);
+        vector_ x = lu_solving(P, b);
+        
+//        vector_ x = gauss(A, b);
 
         std::ofstream os;
         os.open(output_filename);
