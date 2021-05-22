@@ -1,7 +1,7 @@
 #ifndef METOPT_LAB3_H
 #define METOPT_LAB3_H
 
-// здесь должны быть инклуды, дефайны и вспомогательные структуры для методов
+// здесь должны быть генераторы и структуры для методов
 
 #include <utility>
 #include <vector>
@@ -134,6 +134,17 @@ public:
         }
     }
 };
+
+
+matrix_ guilbert_generator(int k) {
+    matrix_ m = matrix_(k, vector_(k));
+    for (int i = 0; i < k; ++i) {
+        for (int j = 0; j < k; ++j) {
+            m[i][j] = 1.0 / (i + j + 1);
+        }
+    }
+    return m;
+}
 
 
 #endif //METOPT_LAB3_H
