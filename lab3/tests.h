@@ -83,7 +83,7 @@ void simple_test() {
 
 /// Тест LU-метода на матрицах с различным числом обусловленности
 void LU_test() {
-    std::ofstream os = logger_start("test_LU.csv", "n,k,||x* - x_k||,||x* - x_k|| / ||x*||");
+    std::ofstream os = logger_start("test_lu_diagonal.csv", "n,k,||x* - x_k||,||x* - x_k|| / ||x*||");
 
     for (int n = 10; n <= 100; n *= 10) {
         for (int k = 0; k <= 10; ++k) {
@@ -126,7 +126,7 @@ void guilbert_test() {
 
 /// Тест метода Гаусса на плотных матрицах
 void gauss_test() {
-    std::ofstream os = logger_start("test_gauss.csv", "n,x");
+    std::ofstream os = logger_start("test_gauss_diagonal.csv", "n,x");
     matrix_ m;
     vector_ b;
 

@@ -7,7 +7,7 @@
 #include <iostream>
 #include <iomanip>
 
-std::string ROOT = "/home/rytuo/work/metOpt/MetOpt/lab3/";
+const std::string ROOT = "/home/rytuo/work/metOpt/MetOpt/lab3/";
 
 /// Ввод из файла: размерность n, матрица A, вектор b
 int input(const std::string &filename, matrix_ &A, vector_ &b) {
