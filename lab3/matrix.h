@@ -42,38 +42,38 @@ public:
         iu.push_back((int)au.size());
     }
 
-    // генерируем матрицу как в задании
+    /// генерируем матрицу как в задании
     explicit profile_matrix(int n, int k) {
         this->n = n;
 
         srand(time(nullptr));
         std::vector<int> default_values = {0, -1, -2, -3, -4};
 
-
-        d.resize(n);
+        d = vector_();
         al = vector_();
         au = vector_();
-        il.resize(n + 1, 0);
-        iu.resize(n + 1, 0);
+        il = std::vector<int>(n + 1, 0);
+        iu = std::vector<int>(n + 1, 0);
 
         int sum = 0;
-        for (int i = 1; i < n; i++) {
-            int size = std::rand() % i + 1;
-            il[i] = il[i - 1] + size;
+        for (int i = 0; i < n; i++) {
+            int size = std::rand() % (i + 1);
+            il[i + 1] = il[i] + size;
             for (int j = 0; j < size; ++j) {
                 int nv = default_values[std::rand() % 5];
                 al.push_back(nv);
                 sum += nv;
             }
 
-            size = std::rand() % i + 1;
-            iu[i] = iu[i - 1] + size;
+            size = std::rand() % (i + 1);
+            iu[i + 1] = iu[i] + size;
             for (int j = 0; j < size; ++j) {
                 int nv = default_values[std::rand() % 5];
                 au.push_back(nv);
                 sum += nv;
             }
         }
+
         d[0] = -sum + pow(10, -k);
         for (int i = 1; i < n; i++) {
             d[i] = -sum;
@@ -130,6 +130,123 @@ public:
                 }
             } else {
                 au[k] = v;
+            }
+        }
+    }
+};
+
+class sparse_matrix {
+private:
+    int n;
+    vector_ d, al, au;
+    std::vector<int> ia, ja;
+public:
+    explicit sparse_matrix(matrix_ &m) {
+        n = (int)m.size();
+
+        d = vector_ ();
+        al = vector_();
+        au = vector_();
+        ia = std::vector<int>();
+        ja = std::vector<int>();
+        for (int i = 0, j; i < n; ++i) {
+            d.push_back(m[i][i]);
+            ia.push_back((int)al.size());
+            for (j = 0; j < i; ++j) {
+                if (m[i][j] != 0 || m[j][i] != 0) {
+                    al.push_back(m[i][j]);
+                    au.push_back(m[j][i]);
+                }
+            }
+        }
+        ia.push_back((int)al.size());
+    }
+
+    /// генерируем матрицу как в задании
+    explicit sparse_matrix(int n) {
+        this->n = n;
+
+        srand(time(nullptr));
+        std::vector<int> default_values = {0, -1, -2, -3, -4};
+
+        d = vector_();
+        al = vector_();
+        au = vector_();
+        ia = std::vector<int>(n + 1, 0);
+        ja = std::vector<int>(); // ?
+
+        int sum = 0;
+        for (int i = 1; i < n; i++) {
+            ia[i + 1] = ia[i];
+            for (int j = 0; j < i; ++j) {
+                int nv1 = default_values[std::rand() % 5];
+                int nv2 = default_values[std::rand() % 5];
+                if (nv1 != 0 || nv2 != 0) {
+                    al.push_back(nv1);
+                    au.push_back(nv2);
+                    ja.push_back(j);
+                    ia[i + 1]++;
+                }
+            }
+        }
+
+        d[0] = -sum + 1;
+        for (int i = 1; i < n; i++) {
+            d[i] = -sum;
+        }
+    }
+
+    int size() const {
+        return n;
+    }
+
+    /// получаем элемент матрицы по индексу
+    double get(int i, int j) {
+        if (i == j) {
+            return d[i];
+        } else {
+            bool reverse = false;
+            if (j > i) {
+                std::swap(i, j);
+                reverse = true;
+            }
+            int k = ia[i];
+            for (; k < ia[i + 1] && ja[k] < j; ++k) {}
+            if (ja[k] == j) {
+                return reverse ? au[k] : al[k];
+            }
+            return 0;
+        }
+    }
+
+    /// меняем элемент по индексу
+    void set(int i, int j, double v) {
+        if (i == j) {
+            d[i] = v;
+        } else {
+            bool reverse = false;
+            if (j > i) {
+                std::swap(i, j);
+                reverse = true;
+            }
+            int k = ia[i];
+            for (; k < ia[i + 1] && ja[k] < j; ++k) {}
+            if (ja[k] == j) {
+                if (reverse) {
+                    au[k] = v;
+                } else {
+                    al[k] = v;
+                }
+            } else {
+                al.insert(al.begin() + k, v);
+                au.insert(au.begin() + k, 0);
+                ja.insert(ja.begin() + k, j);
+                if (reverse) {
+                    std::swap(al[k], au[k]);
+                }
+                for (int l = i + 1; l <= n; ++l) {
+                    ia[l]++;
+                }
             }
         }
     }

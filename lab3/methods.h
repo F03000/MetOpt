@@ -10,7 +10,7 @@
  * На вход подается квадратная матрица ?профильного? формата
  * На выходе вектор x - одно из решений слау (если есть)
  * */
-std::vector<double> lu_solver(profile_matrix &A, vector_ &b) {
+vector_ lu_solver(profile_matrix &A, vector_ &b) {
     int n = A.size();
     for (int j = 0; j < n; j++) {
         for (int i = j + 1; i < n; i++) {
@@ -46,7 +46,7 @@ std::vector<double> lu_solver(profile_matrix &A, vector_ &b) {
  * На вход подается квадратная матрица ?плотного? формата
  * На выходе вектор x - одно из решений слау (если есть)
  * */
-std::vector<double> gauss(matrix_ &A, vector_ &b) {
+vector_ gauss(matrix_ &A, vector_ &b) {
     int n = (int)A.size();
 
     // прямой ход
@@ -96,6 +96,16 @@ std::vector<double> gauss(matrix_ &A, vector_ &b) {
     }
 
     return x;
+}
+
+/**
+ * Алгоритм реешния слау методом сопряженных градиентов
+ * На вход подается матрица в разреженном симметричном строчно-столбцовом формате
+ * На выходе вектор x - одно из решений слау (если есть)
+ */
+vector_ conjugate_gradient(sparse_matrix &A, vector_ &b) {
+    // TODO
+    return b;
 }
 
 #endif //METOPT_METHODS_H
