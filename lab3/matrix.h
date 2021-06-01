@@ -252,6 +252,17 @@ public:
     }
 };
 
+vector_ operator*(sparse_matrix &A, vector_ &x) {
+    int n = (int)A.size();
+    vector_ t = vector_(n, 0);
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            t[i] = A.get(i, j) * x[i];
+        }
+    }
+    return t;
+}
+
 /// Генератор Гильбертовых матриц
 matrix_ guilbert_generator(int n) {
     matrix_ m = matrix_(n, vector_(n));
