@@ -1,8 +1,6 @@
 #ifndef METOPT_MATRIX_H
 #define METOPT_MATRIX_H
 
-// здесь должны быть генераторы и структуры для методов
-
 #include <utility>
 #include <vector>
 #include <cstdlib>

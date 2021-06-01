@@ -1,7 +1,5 @@
 #include "tests.h"
 
-// здесь должен быть запуск тестов/методов
-
 int main() {
     test_simple();
     test_lu_diagonal();

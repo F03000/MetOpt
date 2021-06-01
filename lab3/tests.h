@@ -125,7 +125,7 @@ void test_conjugate_simple() {
         std::ofstream os = logger_start(output_filename, "");
 
         sparse_matrix P = sparse_matrix(A);
-        vector_ x = conjugate_gradient(P, b);
+        vector_ x = conjugate_gradient(P, b, 10e-7);
 
         vector_ absolute_accuracy(x.size());
         vector_ exact_solution(x.size());
@@ -151,7 +151,7 @@ void test_conjugate_diagonal() {
                 exact_solution[i] = i + 1;
             }
             vector_ b = p * exact_solution;
-            vector_ x = conjugate_gradient(p, b);
+            vector_ x = conjugate_gradient(p, b, 10e-7);
             vector_ absolute_accuracy(x.size());
             for (int j = 0; j < x.size(); j++) {
                 absolute_accuracy[j] = exact_solution[j] - x[j];
@@ -174,7 +174,7 @@ void test_conjugate_reverse_diagonal() {
                 exact_solution[i] = i + 1;
             }
             vector_ b = p * exact_solution;
-            vector_ x = conjugate_gradient(p, b);
+            vector_ x = conjugate_gradient(p, b, 10e-7);
             vector_ absolute_accuracy(x.size());
             for (int j = 0; j < x.size(); j++) {
                 absolute_accuracy[j] = exact_solution[j] - x[j];
@@ -194,7 +194,7 @@ void test_conjugate_guilbert() {
         sparse_matrix p = sparse_matrix(g);
         vector_ exact_solution = free_generator(n);
         vector_ b = p * exact_solution;
-        vector_ x = conjugate_gradient(p, b);
+        vector_ x = conjugate_gradient(p, b, 10e-7);
         vector_ absolute_accuracy(x.size());
         for (int j = 0; j < x.size(); j++) {
             absolute_accuracy[j] = exact_solution[j] - x[j];

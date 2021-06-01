@@ -2,7 +2,7 @@
 #define METOPT_METHODS_H
 
 #include "matrix.h"
-#include "conjugate_gradient.h"
+#include "linear_algebra.h"
 
 /**
  * Алгоритм решения слау на основе LU-разложения
@@ -102,10 +102,25 @@ vector_ gauss(matrix_ &A, vector_ &b) {
  * На вход подается матрица в разреженном симметричном строчно-столбцовом формате
  * На выходе вектор x - одно из решений слау (если есть)
  */
-vector_ conjugate_gradient(sparse_matrix &A, vector_ &b) {
-    vector_ x0 = vector_(A.size(), 0);
-    vector_ b_ = b * -1;
-    return conjugate_gradient(A, b_, 0, x0, 10e-7);
+vector_ conjugate_gradient(sparse_matrix &A, vector_ &b, double eps) {
+    b = b * -2;
+    vector_ x_cur = vector_(A.size(), 0);
+    vector_ gradient = (A * x_cur) * 2 + b;
+    vector_ p_cur = vector_(A.size(), 0) - gradient;
+
+    while (true) {
+        if (module(gradient) < eps) {
+            return x_cur;
+        }
+
+        double alpha = -((scalar(gradient, p_cur)) / (scalar(A * p_cur, p_cur))) / 2;
+        vector_ x_new = x_cur + p_cur * alpha;
+        vector_ gradient_new = (A * x_new) * 2 + b;
+        double beta = module(gradient_new) * module(gradient_new) / (module(gradient) * module(gradient));
+        p_cur = p_cur * beta - gradient_new;
+        gradient = gradient_new;
+        x_cur = x_new;
+    }
 }
 
 #endif //METOPT_METHODS_H
