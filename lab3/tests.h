@@ -3,48 +3,7 @@
 
 #include "loggers.h"
 #include "methods.h"
-
-// модуль вектора
-double module(const vector_& x) {
-    double sum = 0;
-    for (auto i : x) {
-        sum += i * i;
-    }
-    return sqrt(sum);
-}
-
-// скалярное произведение векторов
-double scalar(const vector_ &v1, const vector_ &v2) {
-    double res = 0;
-    for (int i = 0; i < v1.size(); ++i) {
-        res += v1[i] * v2[i];
-    }
-    return res;
-}
-
-
-// Умножение матрицы на вектор (получается вектор-столбец)
-vector_ multiply(const matrix_ &m, const vector_ &v) {
-    vector_ res(v.size());
-    for (int i = 0; i < m.size(); i++) {
-        res[i] = scalar(m[i], v);
-    }
-    return res;
-}
-
-// Умножение матрицы на вектор (получается вектор-столбец)
-vector_ multiply(profile_matrix &m, const vector_ &v) {
-    vector_ res(v.size());
-    for (int k = 0; k < v.size(); k++) {
-        for (int i = 0; i < v.size(); i++) {
-            res[i] = 0;
-            for (int j = 0; j < v.size(); j++) {
-                res[i] += m.get(i, j) * v[j];
-            }
-        }
-    }
-    return res;
-}
+#include "linear_algebra.h"
 
 /// Тест методов на уже созданных матрицах
 void simple_test() {
@@ -76,7 +35,7 @@ void simple_test() {
             absolute_accuracy[j] = j + 1 - x[j];
         }
 
-        log(os, A.size(), 0, module(absolute_accuracy), module(absolute_accuracy) / module(exact_solution));
+        log(os, (int)A.size(), 0, module(absolute_accuracy), module(absolute_accuracy) / module(exact_solution));
         os.close();
     }
 }
@@ -92,7 +51,7 @@ void LU_test() {
             for (int i = 0; i < n; i++) {
                 exact_solution[i] = i + 1;
             }
-            vector_ b = multiply(p, exact_solution);
+            vector_ b = p * exact_solution;
             vector_ x = lu_solver(p, b);
             vector_ absolute_accuracy(x.size());
             for (int j = 0; j < x.size(); j++) {
@@ -112,7 +71,7 @@ void guilbert_test() {
         matrix_ g = guilbert_generator(n);
         profile_matrix p = profile_matrix(g);
         vector_ exact_solution = free_generator(n);
-        vector_ b = multiply(p, exact_solution);
+        vector_ b = p * exact_solution;
         vector_ x = lu_solver(p, b);
         vector_ absolute_accuracy(x.size());
         for (int j = 0; j < x.size(); j++) {
@@ -133,7 +92,7 @@ void gauss_test() {
     for (int n = 10; n <= 1000; n *= 10) {
         m = dense_generator(n);
         vector_ exact_solution = free_generator(n);
-        b = multiply(m, exact_solution);
+        b = m * exact_solution;
         vector_ x_gauss = gauss(m, b);
         profile_matrix pm (m);
         vector_ x_lu = lu_solver(pm, b);

@@ -16,6 +16,11 @@ double scalar(const vector_& v1, const vector_& v2) {
     return res;
 }
 
+// длина вектора
+double module(const vector_& v) {
+    return sqrt(scalar(v, v));
+}
+
 // Умножение вектора на число
 vector_ operator*(const vector_ &v, double a) {
     vector_ t = vector_(v.size());
@@ -79,11 +84,6 @@ matrix_ operator*(matrix_ m, double a) {
         }
     }
     return t;
-}
-
-// длина вектора
-double module(const vector_& v) {
-    return sqrt(scalar(v, v));
 }
 
 #endif //METOPT_LINEAR_ALGEBRA_H

@@ -4,6 +4,7 @@
 
 int main() {
     simple_test();
+//    LU_test()
 //    guilbert_test();
 //    gauss_test();
 }

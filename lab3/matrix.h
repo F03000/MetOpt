@@ -135,6 +135,19 @@ public:
     }
 };
 
+vector_ operator*(profile_matrix &m, const vector_ &v) {
+    vector_ res(v.size());
+    for (int k = 0; k < v.size(); k++) {
+        for (int i = 0; i < v.size(); i++) {
+            res[i] = 0;
+            for (int j = 0; j < v.size(); j++) {
+                res[i] += m.get(i, j) * v[j];
+            }
+        }
+    }
+    return res;
+}
+
 class sparse_matrix {
 private:
     int n;
@@ -252,12 +265,12 @@ public:
     }
 };
 
-vector_ operator*(sparse_matrix &A, vector_ &x) {
+vector_ operator*(sparse_matrix &A, vector_ &v) {
     int n = (int)A.size();
     vector_ t = vector_(n, 0);
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
-            t[i] = A.get(i, j) * x[i];
+            t[i] = A.get(i, j) * v[i];
         }
     }
     return t;
