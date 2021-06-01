@@ -13,7 +13,7 @@ void test_simple() {
     vector_ b;
     vector_ exact_solution;
 
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 4; ++i) {
         std::string input_filename = "test_" + std::to_string(i) + ".txt";
         if (!input(input_filename, A, b, exact_solution)) {
             continue;
@@ -109,7 +109,7 @@ void test_conjugate_simple() {
     vector_ b;
     vector_ exact_solution;
 
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 4; ++i) {
         std::string input_filename = "test_" + std::to_string(i) + ".txt";
         if (!input(input_filename, A, b, exact_solution)) {
             continue;
