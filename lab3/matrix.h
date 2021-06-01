@@ -176,7 +176,7 @@ public:
     }
 
     /// генерируем матрицу как в задании
-    explicit sparse_matrix(int n) {
+    explicit sparse_matrix(int n, int multiplier) {
         this->n = n;
 
         srand(time(nullptr));
@@ -192,8 +192,8 @@ public:
         for (int i = 1; i < n; i++) {
             ia[i + 1] = ia[i];
             for (int j = 0; j < i; ++j) {
-                int nv1 = default_values[std::rand() % 5];
-                int nv2 = default_values[std::rand() % 5];
+                int nv1 = default_values[std::rand() % 5] * multiplier;
+                int nv2 = default_values[std::rand() % 5] * multiplier;
                 if (nv1 != 0 || nv2 != 0) {
                     al.push_back(nv1);
                     au.push_back(nv2);

@@ -3,8 +3,12 @@
 // здесь должен быть запуск тестов/методов
 
 int main() {
-    simple_test();
-//    LU_test()
-//    guilbert_test();
-//    gauss_test();
+    test_simple();
+    test_lu_diagonal();
+    test_lu_guilbert();
+    test_gauss_diagonal();
+    test_conjugate_simple();
+    test_conjugate_diagonal();
+    test_conjugate_reverse_diagonal();
+    test_conjugate_guilbert();
 }
