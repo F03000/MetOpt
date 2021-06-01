@@ -67,42 +67,38 @@ void test_lu_guilbert() {
     for (int n = 10; n <= 1000; n *= 10) {
         matrix_ g = guilbert_generator(n);
         profile_matrix p = profile_matrix(g);
-        vector_ exact_solution = free_generator(n);
+        vector_ exact_solution(n);
+        for (int i = 0; i < n; i++) {
+            exact_solution[i] = i + 1;
+        }
         vector_ b = p * exact_solution;
         vector_ x = lu_solver(p, b);
         vector_ absolute_accuracy(x.size());
         for (int j = 0; j < x.size(); j++) {
             absolute_accuracy[j] = exact_solution[j] - x[j];
         }
-        log(os, n, 0, module(absolute_accuracy), module(absolute_accuracy) / module(exact_solution));
+        log(os, n, n * n, module(absolute_accuracy), module(absolute_accuracy) / module(exact_solution));
     }
-
     os.close();
 }
 
-/// Тест метода Гаусса
-void test_gauss_diagonal() {
-    std::ofstream os = logger_start("test_gauss_diagonal.csv", csv_init);
-    matrix_ m;
-    vector_ b;
+/// Тест метода Гаусса на положительных матрицах с различным числом обусловленности
+void test_gauss_guilbert() {
+    std::ofstream os = logger_start("test_gauss_guilbert.csv", csv_init);
 
     for (int n = 10; n <= 1000; n *= 10) {
-        m = dense_generator(n);
-        vector_ exact_solution = free_generator(n);
-        b = m * exact_solution;
-        vector_ x_gauss = gauss(m, b);
-        profile_matrix pm (m);
-        vector_ x_lu = lu_solver(pm, b);
-        vector_ absolute_accuracy_gauss(n);
-        for (int j = 0; j < n; j++) {
-            absolute_accuracy_gauss[j] = exact_solution[j] - x_gauss[j];
+        matrix_ g = guilbert_generator(n);
+        vector_ exact_solution(n);
+        for (int i = 0; i < n; i++) {
+            exact_solution[i] = i + 1;
         }
-        gauss_log(os, n, x_gauss, b, m);
-        vector_ absolute_accuracy_lu(n);
-        for (int j = 0; j < n; j++) {
-            absolute_accuracy_lu[j] = exact_solution[j] - x_lu[j];
+        vector_ b = g * exact_solution;
+        vector_ x = gauss(g, b);
+        vector_ absolute_accuracy(x.size());
+        for (int j = 0; j < x.size(); j++) {
+            absolute_accuracy[j] = exact_solution[j] - x[j];
         }
-        gauss_log(os, n, x_lu, b, m);
+        log(os, n, n * n, module(absolute_accuracy), module(absolute_accuracy) / module(exact_solution));
     }
     os.close();
 }
@@ -132,7 +128,7 @@ void test_conjugate_simple() {
     }
 }
 
-/// Тест метода сопряженных градиентов на матрицах с различным числом обусловленности
+/// Тест метода сопряженных градиентов на отрицательных матрицах с различным числом обусловленности
 void test_conjugate_diagonal() {
     std::ofstream os = logger_start("test_conjugate_diagonal.csv", csv_init);
 
@@ -185,16 +181,18 @@ void test_conjugate_guilbert() {
     for (int n = 10; n <= 1000; n *= 10) {
         matrix_ g = guilbert_generator(n);
         sparse_matrix p = sparse_matrix(g);
-        vector_ exact_solution = free_generator(n);
-        vector_ b = p * exact_solution;
+        vector_ exact_solution(n);
+        for (int i = 0; i < n; i++) {
+            exact_solution[i] = i + 1;
+        }
+        vector_ b = g * exact_solution;
         vector_ x = conjugate_gradient(p, b, 10e-7);
         vector_ absolute_accuracy(x.size());
         for (int j = 0; j < x.size(); j++) {
             absolute_accuracy[j] = exact_solution[j] - x[j];
         }
-        log(os, n, 0, module(absolute_accuracy), module(absolute_accuracy) / module(exact_solution));
+        log(os, n, n * n, module(absolute_accuracy), module(absolute_accuracy) / module(exact_solution));
     }
-
     os.close();
 }
 

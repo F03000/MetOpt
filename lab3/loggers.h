@@ -52,13 +52,4 @@ void log(std::ofstream &os, int n, int k, double abs_e, double rel_e) {
     os << n << "," << k << "," << abs_e << "," << rel_e << std::endl;
 }
 
-/// Логирующая функция для метода Гаусса
-void gauss_log(std::ofstream &os, int n, const vector_ &x, const vector_ &b, const matrix_ &m) {
-    os << n << ",[";
-    for (double i : x) {
-        os << i << " ";
-    }
-    os << "]" << std::endl;
-}
-
 #endif //METOPT_LOGGERS_H
