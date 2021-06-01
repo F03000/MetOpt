@@ -5,20 +5,22 @@
 #include "methods.h"
 #include "linear_algebra.h"
 
+const std::string csv_init = "n,k,||x* - x_k||,||x* - x_k|| / ||x*||\n";
+
 /// Тест методов на уже созданных матрицах
 void test_simple() {
     matrix_ A;
     vector_ b;
+    vector_ exact_solution;
 
     for (int i = 0; i < 5; ++i) {
         std::string input_filename = "test_" + std::to_string(i) + ".txt";
-        if (!input(input_filename, A, b)) {
+        if (!input(input_filename, A, b, exact_solution)) {
             continue;
         }
 
         std::string output_filename = "test_" + std::to_string(i) + ".csv";
         std::ofstream os = logger_start(output_filename, "");
-
 
         vector_ x;
         if (i % 2) {
@@ -28,21 +30,16 @@ void test_simple() {
             x = lu_solver(P, b);
         }
 
-        vector_ absolute_accuracy(x.size());
-        vector_ exact_solution(x.size());
-        for (int j = 0; j < x.size(); j++) {
-            exact_solution[j] = j + 1;
-            absolute_accuracy[j] = j + 1 - x[j];
+        for (double j : x) {
+            os << j << " ";
         }
-
-        log(os, (int)A.size(), 0, module(absolute_accuracy), module(absolute_accuracy) / module(exact_solution));
         os.close();
     }
 }
 
 /// Тест LU-метода на матрицах с различным числом обусловленности
 void test_lu_diagonal() {
-    std::ofstream os = logger_start("test_lu_diagonal.csv", "n,k,||x* - x_k||,||x* - x_k|| / ||x*||");
+    std::ofstream os = logger_start("test_lu_diagonal.csv", csv_init);
 
     for (int n = 10; n <= 100; n *= 10) {
         for (int k = 0; k <= 10; ++k) {
@@ -65,7 +62,7 @@ void test_lu_diagonal() {
 
 /// Тест LU-метода на Гильбертовых матрицах
 void test_lu_guilbert() {
-    std::ofstream os = logger_start("test_lu_guilbert.csv", "n,k,||x* - x_k||,||x* - x_k|| / ||x*||");
+    std::ofstream os = logger_start("test_lu_guilbert.csv", csv_init);
 
     for (int n = 10; n <= 1000; n *= 10) {
         matrix_ g = guilbert_generator(n);
@@ -85,7 +82,7 @@ void test_lu_guilbert() {
 
 /// Тест метода Гаусса
 void test_gauss_diagonal() {
-    std::ofstream os = logger_start("test_gauss_diagonal.csv", "n,x");
+    std::ofstream os = logger_start("test_gauss_diagonal.csv", csv_init);
     matrix_ m;
     vector_ b;
 
@@ -114,10 +111,11 @@ void test_gauss_diagonal() {
 void test_conjugate_simple() {
     matrix_ A;
     vector_ b;
+    vector_ exact_solution;
 
     for (int i = 0; i < 5; ++i) {
         std::string input_filename = "test_" + std::to_string(i) + ".txt";
-        if (!input(input_filename, A, b)) {
+        if (!input(input_filename, A, b, exact_solution)) {
             continue;
         }
 
@@ -127,21 +125,16 @@ void test_conjugate_simple() {
         sparse_matrix P = sparse_matrix(A);
         vector_ x = conjugate_gradient(P, b, 10e-7);
 
-        vector_ absolute_accuracy(x.size());
-        vector_ exact_solution(x.size());
-        for (int j = 0; j < x.size(); j++) {
-            exact_solution[j] = j + 1;
-            absolute_accuracy[j] = j + 1 - x[j];
+        for (double j : x) {
+            os << j << " ";
         }
-
-        log(os, (int)A.size(), 0, module(absolute_accuracy), module(absolute_accuracy) / module(exact_solution));
         os.close();
     }
 }
 
 /// Тест метода сопряженных градиентов на матрицах с различным числом обусловленности
 void test_conjugate_diagonal() {
-    std::ofstream os = logger_start("test_conjugate_diagonal.csv", "n,k,||x* - x_k||,||x* - x_k|| / ||x*||");
+    std::ofstream os = logger_start("test_conjugate_diagonal.csv", csv_init);
 
     for (int n = 10; n <= 100; n *= 10) {
         for (int k = 0; k <= 10; ++k) {
@@ -164,7 +157,7 @@ void test_conjugate_diagonal() {
 
 /// Тест метода сопряженных градиентов на положительных матрицах с различным числом обусловленности
 void test_conjugate_reverse_diagonal() {
-    std::ofstream os = logger_start("test_conjugate_reverse_diagonal.csv", "n,k,||x* - x_k||,||x* - x_k|| / ||x*||");
+    std::ofstream os = logger_start("test_conjugate_reverse_diagonal.csv", csv_init);
 
     for (int n = 10; n <= 100; n *= 10) {
         for (int k = 0; k <= 10; ++k) {
@@ -187,7 +180,7 @@ void test_conjugate_reverse_diagonal() {
 
 /// Тест метода сопряженных градиентов на Гильбертовых матрицах
 void test_conjugate_guilbert() {
-    std::ofstream os = logger_start("test_conjugate_guilbert.csv", "n,k,||x* - x_k||,||x* - x_k|| / ||x*||");
+    std::ofstream os = logger_start("test_conjugate_guilbert.csv", csv_init);
 
     for (int n = 10; n <= 1000; n *= 10) {
         matrix_ g = guilbert_generator(n);
