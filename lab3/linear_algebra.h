@@ -21,6 +21,48 @@ double module(const vector_& v) {
     return sqrt(scalar(v, v));
 }
 
+matrix_ get_addition(const matrix_ &m, int i, int j) {
+    int n = (int)m.size();
+    matrix_ nm = matrix_(n - 1, vector_ (n - 1, 0));
+    int q = 0;
+    for (int t = 0; t < n; ++t) {
+        if (t == i) {
+            continue;
+        }
+        int r = 0;
+        for (int k = 0; k < n; ++k) {
+            if (k == j) {
+                continue;
+            }
+            nm[q][r] = m[t][k];
+            r++;
+        }
+        q++;
+    }
+}
+
+double module(const matrix_ &m) {
+    if (m.size() == 1) {
+        return m[0][0];
+    }
+    double res = 0;
+    int n = (int)m.size();
+    for (int i = 0; i < n; ++i) {
+        res += std::pow(-1, i) * m[0][i] * module(get_addition(m, 0, i));
+    }
+}
+
+matrix_ reverse(const matrix_ &m) {
+    int n = (int)m.size();
+    matrix_ A_ = matrix_(n, vector_(n));
+    double k = 1 / module(m);
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            A_[j][i] = module(get_addition(m, i, j)) * k;
+        }
+    }
+}
+
 // Умножение вектора на число
 vector_ operator*(const vector_ &v, double a) {
     vector_ t = vector_(v.size());

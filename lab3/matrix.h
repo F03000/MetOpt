@@ -263,6 +263,17 @@ public:
     }
 };
 
+matrix_ to_matrix_(sparse_matrix &m) {
+    int n = m.size();
+    matrix_ res = matrix_(n, vector_(n));
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            res[i][j] = m.get(i, j);
+        }
+    }
+    return res;
+}
+
 vector_ operator*(sparse_matrix &A, vector_ &v) {
     int n = (int)A.size();
     vector_ t = vector_(n, 0);
@@ -295,6 +306,14 @@ matrix_ dense_generator(int n) {
         }
     }
     return m;
+}
+
+matrix_ matrix_copy(matrix_ &m) {
+    matrix_ res = matrix_(m.size(), vector_(m.size(), 0));
+    for (int i = 0; i < m.size(); ++i) {
+        std::copy(m[i].begin(), m[i].end(), res[i]);
+    }
+    return res;
 }
 
 /// Генератор вектора свободных коэффициентов

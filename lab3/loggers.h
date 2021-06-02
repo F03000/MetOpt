@@ -47,9 +47,4 @@ std::ofstream logger_start(const std::string &filename, const std::string &name)
     return os;
 }
 
-/// Логирующая функция
-void log(std::ofstream &os, int n, int k, double abs_e, double rel_e) {
-    os << n << "," << k << "," << abs_e << "," << rel_e << std::endl;
-}
-
 #endif //METOPT_LOGGERS_H

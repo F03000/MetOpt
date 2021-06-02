@@ -99,19 +99,23 @@ vector_ gauss(matrix_ &A, vector_ &b) {
 
 /**
  * Алгоритм реешния слау методом сопряженных градиентов
- * На вход подается матрица в разреженном симметричном строчно-столбцовом формате
- * На выходе вектор x - одно из решений слау (если есть)
+ * На вход подается матрица в разреженном симметричном строчно-столбцовом формате,
+ * точность вычислений и пустой вектор x - одно из решений слау (если есть)
+ * На выходе количество итераций метода
  */
-vector_ conjugate_gradient(sparse_matrix &A, vector_ &b, double eps) {
+int conjugate_gradient(sparse_matrix &A, vector_ &b, double eps, vector_ &x) {
     b = b * -2;
     vector_ x_cur = vector_(A.size(), 0);
     vector_ gradient = (A * x_cur) * 2 + b;
     vector_ p_cur = vector_(A.size(), 0) - gradient;
+    int iterations = 0;
 
     while (true) {
         if (module(gradient) < eps) {
-            return x_cur;
+            std::copy(x_cur.begin(), x_cur.end(), x.begin());
+            return iterations;
         }
+        iterations++;
 
         double alpha = -((scalar(gradient, p_cur)) / (scalar(A * p_cur, p_cur))) / 2;
         vector_ x_new = x_cur + p_cur * alpha;
