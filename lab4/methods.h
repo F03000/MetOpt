@@ -7,10 +7,8 @@
 #include "linear_algebra.h"
 #include "golden_section.h"
 
-
 // TODO: научиться вычислять градиент и гессиан в точке
 class extended_function {
-
 public:
     extended_function() {
 
@@ -25,6 +23,7 @@ public:
     }
 };
 
+// TODO: сделать вывод в файл в методах newton и quazinewton
 vector_ newton(const vector_ &x0, const double &eps,
                const std::function<vector_(vector_)> &getP,
                const std::function<double(vector_, vector_)> &getA) {
