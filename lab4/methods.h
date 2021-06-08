@@ -10,8 +10,8 @@
 
 // TODO: научиться вычислять градиент и гессиан в точке
 class extended_function {
-public:
 
+public:
     extended_function() {
 
     }
@@ -22,11 +22,6 @@ public:
 
     const matrix_ gess(const vector_ &x) {
 
-        for (int i = 0; i < x.size(); ++i) {
-            for (int j = 0; j < x.size(); ++j) {
-
-            }
-        }
     }
 };
 
@@ -64,12 +59,13 @@ vector_ search_newton(extended_function &f, const vector_ &x0, const double &eps
         auto sf = [&](const double a) {
             return x - p * a;
         };
-        return golden_section(sf, -1000, 1000, eps);
+        return golden_section(sf, eps);
     };
     return newton(x0, eps, getP, getA);
 }
 
 vector_ descent_newton(extended_function &f, const vector_ &x0, const double &eps) {
+    // TODO: поиск направления спуска через СЛАУ
     auto getP = [&](const vector_ &x){
         vector_ q = reversed(f.gess(x)) * f.grad(x) * -1;
         vector_ grad = f.grad(x);
@@ -79,42 +75,45 @@ vector_ descent_newton(extended_function &f, const vector_ &x0, const double &ep
         auto sf = [&](const double a) {
             return x - p * a;
         };
-        return golden_section(sf, -1000, 1000, eps);
+        return golden_section(sf, eps);
     };
     return newton(x0, eps, getP, getA);
 }
 
 vector_ quazinewton(extended_function &f, const vector_ &x0, const double &eps,
-                    const std::function<matrix_ (vector_)> &getG) {
+                    const std::function<matrix_ (matrix_, vector_, vector_)> &getG) {
     matrix_ prev_g = matrix_(x0.size(), vector_(x0.size(), 0));
     for (int i = 0; i < x0.size(); ++i) {
         prev_g[i][i] = 1;
     }
-    vector_ p = f.grad(x0) * -1;
-    vector_ x = vector_(x0.size()), prev_x = vector_(x0.size());
+    vector_ prev_w = f.grad(x0) * -1;
+    vector_ p = prev_w, x = x0;
     auto sf = [&](const double a) {
         return x - p * a;
     };
-    double a = golden_section(sf, -1000, 1000, eps);
-    std::copy(x.begin(), x.end(), prev_x.begin());
+    double a = golden_section(sf, eps);
+    vector_ prev_x = x;
     x = x0 + p * a;
 
     while (true) {
+        vector_ dx = x - prev_x;
         if (module(x - prev_x) < eps) {
             return x;
         }
-        matrix_ g = getG(x);
+        vector_ w = f.grad(x);
+        vector_ dw = w - prev_w;
+        matrix_ g = getG(prev_g, dx, dw);
         p = g * f.grad(x) * -1;
-        a = golden_section(sf, -1000, 1000, eps);
-        vector_ pa = p * a;
-        std::copy(x.begin(), x.end(), prev_x.begin());
+        a = golden_section(sf, eps);
         prev_g = g;
-        x = x + pa;
+        prev_x = x;
+        prev_w = w;
+        x = x + p * a;
     }
 }
 
-vector_ dfp() {
-    auto getG = [&](matrix_ prev_g, vector_ dx, vector_ dw) {
+vector_ dfp(extended_function &f, const vector_ &x0, const double eps) {
+    auto getG = [&](const matrix_ &prev_g, const vector_ &dx, const vector_ &dw) {
         int n = (int)prev_g.size();
         matrix_ first = matrix_(n, vector_(n));
         for (int i = 0; i < n; ++i) {
@@ -132,11 +131,22 @@ vector_ dfp() {
         return prev_g + first * (-1 / scalar(dw, dx)) +
                 second * transparent(prev_g) * (-1 / scalar(prev_g * dw, dw));
     };
-    return quazinewton();
+    return quazinewton(f, x0, eps, getG);
 }
 
-vector_ pauel() {
-
+vector_ pauel(extended_function &f, const vector_ &x0, const double eps) {
+    auto getG = [&](const matrix_ &prev_g, const vector_ &dx, const vector_ &dw) {
+        int n = (int)prev_g.size();
+        vector_ y = dx + prev_g * dw;
+        matrix_ m = matrix_(n, vector_(n));
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                m[i][j] = y[i] * y[j];
+            }
+        }
+        return prev_g + m * (-1 / scalar(dw, y));
+    };
+    return quazinewton(f, x0, eps, getG);
 }
 
 #endif //METOPT_METHODS_H

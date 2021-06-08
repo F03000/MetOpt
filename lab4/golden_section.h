@@ -4,9 +4,10 @@
 int number_of_iterations;
 
 // TODO: починить метод - как сравнивать вектора-результаты функции?
-double golden_section(const std::function<vector_ (double)> &f, double a, double b, double eps) {
+double golden_section(const std::function<vector_ (double)> &f, double eps) {
     const double GOLDEN_RATIO = (1 + std::sqrt(5)) / 2;
     bool left = true;
+    double a = -10000, b = 10000;
     double x1 = a + (b - a) / GOLDEN_RATIO, x2;
     vector_ f_x1 = f(x1), f_x2;
     number_of_iterations = 1;

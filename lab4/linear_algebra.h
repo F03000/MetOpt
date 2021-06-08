@@ -84,8 +84,49 @@ matrix_ operator*(const matrix_ &m, const double a) {
     return t;
 }
 
+// дополнение элемента
+matrix_ get_addition(const matrix_ &m, int i, int j) {
+    int n = (int)m.size();
+    matrix_ nm = matrix_(n - 1, vector_ (n - 1, 0));
+    int q = 0;
+    for (int t = 0; t < n; ++t) {
+        if (t == i) {
+            continue;
+        }
+        int r = 0;
+        for (int k = 0; k < n; ++k) {
+            if (k == j) {
+                continue;
+            }
+            nm[q][r++] = m[t][k];
+        }
+        q++;
+    }
+    return nm;
+}
+
+// определитель
+double module(const matrix_ &m) {
+    if (m.size() == 1) {
+        return m[0][0];
+    }
+    double res = 0;
+    int n = (int)m.size();
+    for (int i = 0; i < n; ++i) {
+        res += std::pow(-1, i) * m[0][i] * module(get_addition(m, 0, i));
+    }
+}
+
+// обратная матрица
 matrix_ reversed(const matrix_ &m) {
-    // TODO: найти обратную матрицу
+    int n = (int)m.size();
+    matrix_ A_ = matrix_(n, vector_(n));
+    double k = 1 / module(m);
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            A_[j][i] = module(get_addition(m, i, j)) * k;
+        }
+    }
 }
 
 matrix_ operator+(matrix_ m1, matrix_ m2) {
@@ -96,6 +137,7 @@ matrix_ operator+(matrix_ m1, matrix_ m2) {
     return m;
 }
 
+// транспонирование
 matrix_ transparent(const matrix_ &m) {
     matrix_ t = matrix_(m.size(), vector_(m.size()));
     for (int i = 0; i < m.size(); ++i) {
