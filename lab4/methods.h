@@ -13,9 +13,9 @@ private:
     std::function<vector_(vector_)> _grad;
     std::function<double(vector_)> _func;
 public:
-    extended_function(std::function<double(vector_)> &func,
-                      std::function<vector_(vector_)> &grad,
-                      std::function<matrix_(vector_)> &gess) {
+    explicit extended_function(const std::function<double(vector_)> &func,
+                      const std::function<vector_(vector_)> &grad,
+                      const std::function<matrix_(vector_)> &gess) {
         _func = func;
         _grad = grad;
         _gess = gess;
