@@ -7,19 +7,30 @@
 #include "linear_algebra.h"
 #include "golden_section.h"
 
-// TODO: научиться вычислять градиент и гессиан в точке
 class extended_function {
+private:
+    std::function<matrix_(vector_)> _gess;
+    std::function<vector_(vector_)> _grad;
+    std::function<double(vector_)> _func;
 public:
-    extended_function() {
-
+    extended_function(std::function<double(vector_)> &func,
+                      std::function<vector_(vector_)> &grad,
+                      std::function<matrix_(vector_)> &gess) {
+        _func = func;
+        _gess = gess;
+        _grad = grad;
     }
 
-    const vector_ grad(const vector_ &x) {
-
+    vector_ grad(const vector_ &x) {
+        return _grad(x);
     }
 
-    const matrix_ gess(const vector_ &x) {
+    matrix_ gess(const vector_ &x) {
+        return _gess(x);
+    }
 
+    double func(const vector_ &x) {
+        return _func(x);
     }
 };
 
@@ -56,7 +67,7 @@ vector_ search_newton(extended_function &f, const vector_ &x0, const double &eps
     };
     auto getA = [&](const vector_ &x, const vector_ &p) {
         auto sf = [&](const double a) {
-            return x - p * a;
+            return x + p * a;
         };
         return golden_section(sf, eps);
     };
