@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <functional>
-#include <mpif-sizeof.h>
 #include "linear_algebra.h"
 #include "golden_section.h"
 
@@ -14,8 +13,8 @@ private:
     std::function<double(vector_)> _func;
 public:
     explicit extended_function(const std::function<double(vector_)> &func,
-                      const std::function<vector_(vector_)> &grad,
-                      const std::function<matrix_(vector_)> &gess) {
+                               const std::function<vector_(vector_)> &grad,
+                               const std::function<matrix_(vector_)> &gess) {
         _func = func;
         _grad = grad;
         _gess = gess;
@@ -40,11 +39,14 @@ vector_ newton(const vector_ &x0, const double &eps,
                const std::function<double(vector_, vector_)> &getA) {
     vector_ x = vector_(x0.size());
     std::copy(x0.begin(), x0.end(), x.begin());
+    size_t number_of_iterations = 0;
     while (true) {
+        number_of_iterations++;
         vector_ p = getP(x);
         double a = getA(x, p);
         vector_ pa = p * a;
         if (module(pa) < eps) {
+            std::cout << number_of_iterations << std::endl;
             return x;
         }
         x = x + pa;
@@ -53,7 +55,7 @@ vector_ newton(const vector_ &x0, const double &eps,
 
 vector_ classic_newton(extended_function &f, const vector_ &x0, const double &eps) {
     auto getP = [&](const vector_ &x){
-            return reversed(f.gess(x)) * f.grad(x) * -1;
+        return reversed(f.gess(x)) * f.grad(x) * -1;
     };
     auto getA = [&](const vector_ &x, const vector_ &p) {
         return 1;
@@ -69,23 +71,18 @@ vector_ search_newton(extended_function &f, const vector_ &x0, const double &eps
         auto sf = [&](const double a) {
             return f.func(x + p * a);
         };
+
         return golden_section(sf, eps);
     };
     return newton(x0, eps, getP, getA);
 }
 
 vector_ descent_newton(extended_function &f, const vector_ &x0, const double &eps) {
-    // TODO: поиск направления спуска через СЛАУ
     auto getP = [&](const vector_ &x){
-        vector_ q = reversed(f.gess(x)) * f.grad(x) * -1;
-        vector_ grad = f.grad(x);
-        return scalar(q, grad) < 0 ? q : grad * -1;
+        return gauss(f.gess(x), vector_(x.size(), 0)-f.grad(x));
     };
     auto getA = [&](const vector_ &x, const vector_ &p) {
-        auto sf = [&](const double a) {
-            return f.func(x + p * a);
-        };
-        return golden_section(sf, eps);
+        return 1;
     };
     return newton(x0, eps, getP, getA);
 }
@@ -139,7 +136,7 @@ vector_ dfp(extended_function &f, const vector_ &x0, const double eps) {
             }
         }
         return prev_g + first * (-1 / scalar(dw, dx)) +
-                second * transparent(prev_g) * (-1 / scalar(prev_g * dw, dw));
+               second * transparent(prev_g) * (-1 / scalar(prev_g * dw, dw));
     };
     return quazinewton(f, x0, eps, getG);
 }
