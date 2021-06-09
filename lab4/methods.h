@@ -17,8 +17,12 @@ public:
                       std::function<vector_(vector_)> &grad,
                       std::function<matrix_(vector_)> &gess) {
         _func = func;
-        _gess = gess;
         _grad = grad;
+        _gess = gess;
+    }
+
+    double func(const vector_ &x) {
+        return _func(x);
     }
 
     vector_ grad(const vector_ &x) {
@@ -27,10 +31,6 @@ public:
 
     matrix_ gess(const vector_ &x) {
         return _gess(x);
-    }
-
-    double func(const vector_ &x) {
-        return _func(x);
     }
 };
 
@@ -67,7 +67,7 @@ vector_ search_newton(extended_function &f, const vector_ &x0, const double &eps
     };
     auto getA = [&](const vector_ &x, const vector_ &p) {
         auto sf = [&](const double a) {
-            return x + p * a;
+            return f.func(x + p * a);
         };
         return golden_section(sf, eps);
     };
@@ -83,7 +83,7 @@ vector_ descent_newton(extended_function &f, const vector_ &x0, const double &ep
     };
     auto getA = [&](const vector_ &x, const vector_ &p) {
         auto sf = [&](const double a) {
-            return x - p * a;
+            return f.func(x + p * a);
         };
         return golden_section(sf, eps);
     };
@@ -99,7 +99,7 @@ vector_ quazinewton(extended_function &f, const vector_ &x0, const double &eps,
     vector_ prev_w = f.grad(x0) * -1;
     vector_ p = prev_w, x = x0;
     auto sf = [&](const double a) {
-        return x - p * a;
+        return f.func(x - p * a);
     };
     double a = golden_section(sf, eps);
     vector_ prev_x = x;
