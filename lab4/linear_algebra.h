@@ -125,7 +125,7 @@ matrix_ reversed(const matrix_ &m) {
     double k = 1 / module(m);
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
-            A_[j][i] = module(get_addition(m, i, j)) * k;
+            A_[j][i] = pow(-1, i + j) * module(get_addition(m, i, j)) * k;
         }
     }
     return A_;
