@@ -1,6 +1,7 @@
 #include "tests.h"
 
 int main() {
-    test01();
-    test02();
+    test_newtons_random();
+    test_newtons_fixed();
+    test_quazinewtons_fixed();
 }

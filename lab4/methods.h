@@ -20,7 +20,7 @@ std::ofstream logger_start(const std::string &filename, const std::string &name)
     std::ofstream os;
     os.open(filename);
     if (os.fail()) {
-        std::cout << "ofstream failed to open";
+        std::cerr << "ofstream failed to open";
     }
     os << std::setprecision(8) << std::fixed;
     os << name;
@@ -55,7 +55,6 @@ public:
     }
 };
 
-// TODO: сделать вывод в файл в методах newton и quazinewton
 vector_ newton(const vector_ &x0, const double &eps,
                const std::function<vector_(vector_)> &getP,
                const std::function<double(vector_, vector_)> &getA,
@@ -64,18 +63,18 @@ vector_ newton(const vector_ &x0, const double &eps,
     std::ofstream log = logger_start(log_names.at(method_name) + "_f" + std::to_string(func_number) + ".csv", "point\n");
     vector_ x = vector_(x0.size());
     std::copy(x0.begin(), x0.end(), x.begin());
-    size_t number_of_iterations = 0;
+    size_t iter = 0;
     while (true) {
         for (double i : x) {
             log << i << " ";
         }
         log << std::endl;
-        number_of_iterations++;
+        iter++;
         vector_ p = getP(x);
         double a = getA(x, p);
         vector_ pa = p * a;
         if (module(pa) < eps) {
-            log << "NOI: " << number_of_iterations;
+            log << "NOI: " << iter;
             log.flush();
             log.close();
             return x;
@@ -84,17 +83,17 @@ vector_ newton(const vector_ &x0, const double &eps,
     }
 }
 
-vector_ classic_newton(extended_function &f, const vector_ &x0, const double &eps, const int func_number) {
+vector_ classic_newton(extended_function &f, const vector_ &x0, const double &eps) {
     auto getP = [&](const vector_ &x){
         return reversed(f.gess(x)) * f.grad(x) * -1;
     };
     auto getA = [&](const vector_ &x, const vector_ &p) {
         return 1;
     };
-    return newton(x0, eps, getP, getA, 0, func_number);
+    return newton(x0, eps, getP, getA, 0, 0);
 }
 
-vector_ search_newton(extended_function &f, const vector_ &x0, const double &eps, const int func_number) {
+vector_ search_newton(extended_function &f, const vector_ &x0, const double &eps) {
     auto getP = [&](const vector_ &x){
         return reversed(f.gess(x)) * f.grad(x) * -1;
     };
@@ -105,23 +104,23 @@ vector_ search_newton(extended_function &f, const vector_ &x0, const double &eps
 
         return golden_section(sf, eps);
     };
-    return newton(x0, eps, getP, getA, 1, func_number);
+    return newton(x0, eps, getP, getA, 1, 1);
 }
 
-vector_ descent_newton(extended_function &f, const vector_ &x0, const double &eps, const int func_number) {
+vector_ descent_newton(extended_function &f, const vector_ &x0, const double &eps) {
     auto getP = [&](const vector_ &x){
         return gauss(f.gess(x), vector_(x.size(), 0)-f.grad(x));
     };
     auto getA = [&](const vector_ &x, const vector_ &p) {
         return 1;
     };
-    return newton(x0, eps, getP, getA, 2, func_number);
+    return newton(x0, eps, getP, getA, 2, 2);
 }
 
 vector_ quazinewton(extended_function &f, const vector_ &x0, const double &eps,
                     const std::function<matrix_ (matrix_, vector_, vector_)> &getG,
                     const int method_name, const int func_number) {
-    size_t number_of_iterations = 0;
+    size_t iter = 0;
     std::ofstream log = logger_start(log_names.at(method_name) + "_f" + std::to_string(func_number) + ".csv", "point\n");
     matrix_ prev_g = matrix_(x0.size(), vector_(x0.size(), 0));
     for (int i = 0; i < x0.size(); ++i) {
@@ -137,13 +136,13 @@ vector_ quazinewton(extended_function &f, const vector_ &x0, const double &eps,
     x = x0 + p * a;
 
     while (true) {
-        number_of_iterations++;
+        iter++;
         for (double i : x) {
             log << i << " ";
         }
         vector_ dx = x - prev_x;
         if (module(x - prev_x) < eps) {
-            log << "NOI: " << number_of_iterations;
+            log << "NOI: " << iter;
             log.flush();
             log.close();
             return x;
@@ -160,7 +159,7 @@ vector_ quazinewton(extended_function &f, const vector_ &x0, const double &eps,
     }
 }
 
-vector_ dfp(extended_function &f, const vector_ &x0, const double eps, const int func_number) {
+vector_ dfp(extended_function &f, const vector_ &x0, const double eps) {
     auto getG = [&](const matrix_ &prev_g, const vector_ &dx, const vector_ &dw) {
         int n = (int)prev_g.size();
         matrix_ first = matrix_(n, vector_(n));
@@ -179,10 +178,10 @@ vector_ dfp(extended_function &f, const vector_ &x0, const double eps, const int
         return prev_g + first * (-1 / scalar(dw, dx)) +
                second * transparent(prev_g) * (-1 / scalar(prev_g * dw, dw));
     };
-    return quazinewton(f, x0, eps, getG, 3, func_number);
+    return quazinewton(f, x0, eps, getG, 3, 3);
 }
 
-vector_ pauel(extended_function &f, const vector_ &x0, const double eps, const int func_number) {
+vector_ pauel(extended_function &f, const vector_ &x0, const double eps) {
     auto getG = [&](const matrix_ &prev_g, const vector_ &dx, const vector_ &dw) {
         int n = (int)prev_g.size();
         vector_ y = dx + prev_g * dw;
@@ -194,7 +193,7 @@ vector_ pauel(extended_function &f, const vector_ &x0, const double eps, const i
         }
         return prev_g + m * (-1 / scalar(dw, y));
     };
-    return quazinewton(f, x0, eps, getG, 4, func_number);
+    return quazinewton(f, x0, eps, getG, 4, 4);
 }
 
 #endif //METOPT_METHODS_H
